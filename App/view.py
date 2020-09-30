@@ -23,6 +23,11 @@ import config
 from DISClib.ADT import list as lt
 from App import controller
 assert config
+from time import process_time
+import controller as ctrl
+
+
+
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -59,20 +64,43 @@ def printMenu():
 
 # Menu principal
 
+def cargarAccidentes(cont):
+    t1_start = process_time() #tiempo inicial
+    print("\nCargando información de crimenes .....")
+    controller.loadData(cont, crimefile)
+    print('Crimenes cargados: ' + str(controller.crimesSize(cont)))
+    print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+    print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+    print('Menor Llave: ' + str(controller.minKey(cont)))
+    print('Mayor Llave: ' + str(controller.maxKey(cont)))
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+
+def accidentesPorFecha(cont):
+    year = input('Digite el año YYYY: ')
+    month = input('Digite el mes MM: ')
+    day = input('Digite el día DD: ')
+    date = year.strip() + '-' + month.strip() + '-' + day.strip()
+    lst = ctrl.accidentesPorFecha(cont, date)
+    print(lst.size())
+
+
+
 while True:
     printMenu()
     inputs = int(input('Seleccione una opción para continuar\n-> '))
 
     if inputs == 1:
-        print("\nInicializando....")
+        print("\nInicializando.....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
 
     elif inputs == 2:
-        print("\nCargando información de crimenes ....")
+        cargarAccidentes(cont)
 
     elif inputs == 3:   #Req. 1
         print("\nBuscando crimenes en un rango de fechas: ")
+        accidentesPorFecha(cont)
 
     elif inputs == 4:   #Req. 2
         print("\nRequerimiento No 1 del reto 3: ")
