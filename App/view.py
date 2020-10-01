@@ -21,10 +21,13 @@
 import sys
 import config
 from DISClib.ADT import list as lt
+from DISClib.DataStructures import listiterator as it
 from App import controller
+from DISClib.ADT import orderedmap as om
 assert config
 from time import process_time
-import controller as ctrl
+from App import controller as ctrl
+
 
 
 
@@ -77,13 +80,21 @@ def cargarAccidentes(cont):
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 def accidentesPorFecha(cont):
+    t1_start = process_time() #tiempo inicial
     year = input('Digite el año YYYY: ')
     month = input('Digite el mes MM: ')
     day = input('Digite el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     lst = ctrl.accidentesPorFecha(cont, date)
-    print(lst.size())
-
+    print('Los tipos de crimenes cometidos en la fecha', date, 'fueron: ')
+    iterator = it.newIterator(lst[1])
+    i = 0
+    while it.hasNext(iterator):
+        print(i+1,'- ',it.next(iterator))
+        i += 1
+    print('Para un total de ',lst[0],' crimenes')
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
 while True:

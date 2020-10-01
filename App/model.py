@@ -26,6 +26,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import map as m
 import datetime
 assert config
+from DISClib.DataStructures import listiterator as it
 
 """
 En este archivo definimos los TADs que vamos a usar,
@@ -193,14 +194,18 @@ def getCrimesByRangeCode(analyzer, initialDate, offensecode):
         return 0
 
 def accidentesPorFecha(cont, date):
-    lst = om.get(cont['dateIndex'], date)
-    if crimedate['key'] is not None:
-        offensemap = me.getValue(crimedate)['offenseIndex']
-        numoffenses = m.get(offensemap, offensecode)
-        if numoffenses is not None:
-            return m.size(me.getValue(numoffenses)['lstoffenses'])
-        return 0
-    return lst
+    data = om.get(cont['dateIndex'],date)
+    values = me.getValue(data)['offenseIndex']
+    crimes = m.keySet(values)
+    cantidad = 0
+    
+    iterator = it.newIterator(crimes)
+    i = 0
+    while it.hasNext(iterator):
+        actual = m.get(values,it.next(iterator))
+        cantidad += m.size(me.getValue(actual)['lstoffenses'])
+        i += 1
+    return (cantidad,crimes)
 # ==============================
 # Funciones de Comparacion
 # ==============================
