@@ -198,13 +198,11 @@ def accidentesPorFecha(cont, date):
     values = me.getValue(data)['offenseIndex']
     crimes = m.keySet(values)
     cantidad = 0
-    
     iterator = it.newIterator(crimes)
-    i = 0
     while it.hasNext(iterator):
         actual = m.get(values,it.next(iterator))
         cantidad += m.size(me.getValue(actual)['lstoffenses'])
-        i += 1
+
     return (cantidad,crimes)
 # ==============================
 # Funciones de Comparacion
