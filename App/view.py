@@ -88,9 +88,9 @@ def accidentesPorFecha(cont):
     lst = ctrl.accidentesPorFecha(cont, date)
     print('Los tipos de crimenes cometidos en la fecha', date, 'fueron: ')
     iterator = it.newIterator(lst[1])
-    i = 0
+    i = 1
     while it.hasNext(iterator):
-        print(i+1,'- ',it.next(iterator))
+        print(i,'- ',it.next(iterator))
         i += 1
     print('Para un total de ',lst[0],' crimenes')
     t1_stop = process_time() #tiempo final
