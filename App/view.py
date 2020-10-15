@@ -30,8 +30,6 @@ from App import controller as ctrl
 
 
 
-
-
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion hace la solicitud 
@@ -42,7 +40,7 @@ al controlador para ejecutar la operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
-crimefile = 'crime-utf8.csv'
+accidentfile = 'US_Accidents_Dec19.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -70,8 +68,8 @@ def printMenu():
 def cargarAccidentes(cont):
     t1_start = process_time() #tiempo inicial
     print("\nCargando información de crimenes .....")
-    controller.loadData(cont, crimefile)
-    print('Crimenes cargados: ' + str(controller.crimesSize(cont)))
+    controller.loadData(cont, accidentfile)
+    print('Crimenes cargados: ' + str(controller.accidentsSize(cont)))
     print('Altura del arbol: ' + str(controller.indexHeight(cont)))
     print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
     print('Menor Llave: ' + str(controller.minKey(cont)))
@@ -92,10 +90,14 @@ def accidentesPorFecha(cont):
     while it.hasNext(iterator):
         print(i,'- ',it.next(iterator))
         i += 1
-    print('Para un total de ',lst[0],' crimenes')
+    print('Para un total de ',lst[0]['total'],' crimenes')
+    print('Total según severidad: ')
+    print('Severidad 1: ',lst[0]['1'])
+    print('Severidad 2: ',lst[0]['2'])
+    print('Severidad 3: ',lst[0]['3'])
+    print('Severidad 4: ',lst[0]['4'])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-
 
 while True:
     printMenu()
