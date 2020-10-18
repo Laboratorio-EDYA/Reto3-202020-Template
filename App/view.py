@@ -100,18 +100,12 @@ def accidentesPorFecha(cont):   #Req. 1
     day = input('Digite el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     lst = ctrl.accidentesPorFecha(cont, date)
-    print('Los tipos de accidentes sucedidos en la fecha', date, 'fueron: ')
-    iterator = it.newIterator(lst[1])
-    i = 1
-    while it.hasNext(iterator):
-        print(i,'- ',it.next(iterator))
-        i += 1
-    print('Para un total de ',lst[0]['total'],' accidentes')
+    print('Para un total de ',lst['total'],' accidentes')
     print('Total según severidad: ')
-    print('Severidad 1: ',lst[0]['1'])
-    print('Severidad 2: ',lst[0]['2'])
-    print('Severidad 3: ',lst[0]['3'])
-    print('Severidad 4: ',lst[0]['4'])
+    print('Severidad 1: ',lst['1'])
+    print('Severidad 2: ',lst['2'])
+    print('Severidad 3: ',lst['3'])
+    print('Severidad 4: ',lst['4'])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
@@ -120,9 +114,9 @@ def accidentesEnUnRangoDeFecha(cont):
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
-    lst = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate)
-    print("La cantidad total de accidentes ocurridos desde" +initialDate+ "hasta" +finalDate+ "fueron" ,lst(0), "accidentes" )
-    print("La severidad" ,lst(1), "fue la más común en estos accidentes")
+    data = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate)
+    print("La cantidad total de accidentes ocurridos desde " +initialDate+ " hasta " +finalDate+ " fueron" ,data[0], "accidentes" )
+    print("La severidad" ,data[1][0], "fue la más común en estos accidentes, con un total de ",data[1][1])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
@@ -131,9 +125,9 @@ def conocerEstado (cont):
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
-    lst = ctrl.conocerEstado(cont,initialDate,finalDate)
-    print("El estado con más accidentes reportados es" ,lst(0))
-    print("La fecha donde hubo más accidentes fue" ,lst(1))
+    data = ctrl.conocerEstado(cont,initialDate,finalDate)
+    print("El estado con más accidentes reportados es" ,data[2][0])
+    print("La fecha donde hubo más accidentes fue" ,str(data[1][0]).replace('datetime.date(','').replace(')',''), 'con ',data[1][1], 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 

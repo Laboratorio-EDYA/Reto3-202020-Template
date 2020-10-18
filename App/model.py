@@ -119,7 +119,7 @@ def newDataEntry(accident):
     """
     entry = {'offenseIndex': None, 'lstaccident': None}
     entry['offenseIndex'] = m.newMap(numelements=30,
-                                     maptype='PROBING',
+                                     maptype='CHAINING',
                                      comparefunction=compareOffenses)
     entry['lstaccident'] = lt.newList('SINGLE_LINKED', compareDates)
     return entry
@@ -208,45 +208,67 @@ def accidentesPorFecha(cont, date):
             current = it.next(siguiente)
             severidad = current['Severity']
             cantidad[severidad] += 1
-    return (cantidad,accidents)
+    return cantidad
 
 
 def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)
-    accidents=getAccidentsByRange(cont,initialDate,finalDate)
-    size = lt.size(accidents)
-    cantidad = {'1':0,'2':0,'3':0,'4':0}
-    iterator = it.newIterator(accidents)
-    print(accidents)
+    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+    cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
+    iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
-        accident = it.next(iterator)
-        severidad = accident['Severity']
-        cantidad[severidad] += 1
-        # cantidad['total'] += 1
-    i = [(key,value) for key,value in cantidad.items()]
-    mayor = max(i)[0]
-    return (size,mayor)
-
+        date = it.next(iterator)
+        cantidades = accidentesPorFecha(cont,date)
+        cantidad['total'] += cantidades['total']
+        cantidad['1'] += cantidades['1']
+        cantidad['2'] += cantidades['2']
+        cantidad['3'] += cantidades['3']
+        cantidad['4'] += cantidades['4']
+    mayor = ['',0]
+    total = cantidad['total']
+    del cantidad['total']
+    for i in cantidad:
+        if cantidad[i] >= mayor[1]:
+            mayor[0] = i
+            mayor[1] = cantidad[i]
+    return (total,mayor)
 
 def conocerEstado (cont,initialDate,finalDate):
-    accidents = getAccidentsByRange(cont,initialDate,finalDate)
-    iterator = it.newIterator(accidents)
-    states = {}
-    mayor={}
+    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+    cantidad = {'total': 0, 'fecha': {}, 'state': {} }
+    iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
-        accident = it.next(iterator)
-        state = accident['State']
-        date = accident['Start_Time']
-        if date in mayor:
-            mayor[date]+=1
-        else: 
-            mayor[date]=1
-        if state in states:
-            states[state] += 1
-        else:
-            states[state] = 1
-    iss = [(key,value) for key,value in states.items()]
-    im  = [(key,value) for key,value in mayor.items()]
-    return (max(iss)[0], max(im)[0])
+        date = it.next(iterator)
+        data = om.get(cont['dateIndex'],date)
+        values = me.getValue(data)['offenseIndex']
+        accidents = m.keySet(values)
+        numero = 0
+        iterator2 = it.newIterator(accidents)
+        while it.hasNext(iterator2):
+            actual = m.get(values,it.next(iterator2))
+            data = me.getValue(actual)['lstoffenses']
+            cantidad['total'] += lt.size(data)
+            numero += lt.size(data)
+            siguiente = it.newIterator(data)
+            while it.hasNext(siguiente):
+                current = it.next(siguiente)
+                state = current['State']
+                if state not in cantidad['state']:
+                    cantidad['state'][state] = 1
+                else: 
+                    cantidad['state'][state] += 1
+        cantidad['fecha'][date] = numero
+    mayorFecha = ['',0]
+    for i in cantidad['fecha']:
+        if cantidad['fecha'][i] >= mayorFecha[1]:
+            mayorFecha[0] = i
+            mayorFecha[1] = cantidad['fecha'][i]
+    mayorState = ['',0]
+    for i in cantidad['state']:
+        if cantidad['state'][i] >= mayorState[1]:
+            mayorState[0] = i
+            mayorState[1] = cantidad['state'][i]
+    return (cantidad['total'], mayorFecha, mayorState)
+                
     
 # ==============================
 # Funciones de Comparacion
