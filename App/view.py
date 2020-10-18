@@ -30,8 +30,6 @@ from App import controller as ctrl
 
 
 
-
-
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion hace la solicitud 
@@ -42,7 +40,11 @@ al controlador para ejecutar la operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
-crimefile = 'crime-utf8.csv'
+accidentesAll = 'US_Accidents_Dec19.csv'
+accidentes2016 = 'us_accidents_dis_2016.csv'
+accidentes2017 = 'us_accidents_dis_2017.csv'
+accidentes2018 = 'us_accidents_dis_2018.csv'
+accidentes2019 = 'us_accidents_dis_2019.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -53,15 +55,14 @@ def printMenu():
     print("\n")
     print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar información de accidentes")
-    print("3- Conocer los accidentes en una fecha")
-    print("4- Conocer los accidentes anteriores a una fecha")
-    print("5- Conocer los accidentes en un rango de fechas")
-    print("6- Conocer el estado con mas accidentes")
-    print("7- Conocer los accidentes por rango de horas")
-    print("8- Conocer la zona geográfica mas accidentada")
-    print("9- Usar el conjunto completo de datos")
+    print("1- Inicializar Analizador y cargar información de accidentes")
+    print("2- Conocer los accidentes en una fecha")
+    print("3- Conocer los accidentes anteriores a una fecha")
+    print("4- Conocer los accidentes en un rango de fechas")
+    print("5- Conocer el estado con mas accidentes")
+    print("6- Conocer los accidentes por rango de horas")
+    print("7- Conocer la zona geográfica mas accidentada")
+    print("8- Usar el conjunto completo de datos")
     print("0- Salir")
     print("-"*75)
 
@@ -69,71 +70,131 @@ def printMenu():
 
 def cargarAccidentes(cont):
     t1_start = process_time() #tiempo inicial
-    print("\nCargando información de crimenes .....")
-    controller.loadData(cont, crimefile)
-    print('Crimenes cargados: ' + str(controller.crimesSize(cont)))
-    print('Altura del arbol: ' + str(controller.indexHeight(cont)))
-    print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
-    print('Menor Llave: ' + str(controller.minKey(cont)))
-    print('Mayor Llave: ' + str(controller.maxKey(cont)))
+    anio = int(input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n-> "))
+    if anio == 2016:
+        accidentfile = accidentes2016
+    elif anio == 2017:
+        accidentfile = accidentes2017
+    elif anio == 2018:
+        accidentfile = accidentes2018
+    elif anio == 2019:
+        accidentfile = accidentes2019
+    try:
+        print("\nCargando información de accidentes .....")
+        controller.loadData(cont, accidentfile)
+        print('Crimenes cargados: ' + str(controller.accidentsSize(cont)))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+        print('Menor Llave: ' + str(controller.minKey(cont)))
+        print('Mayor Llave: ' + str(controller.maxKey(cont)))
+    except:
+        print('¡¡KELLY ASEGURESE DE DIGITAR EL AÑO BIEN!!')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-def accidentesPorFecha(cont):
+
+def accidentesPorFecha(cont):   #Req. 1
     t1_start = process_time() #tiempo inicial
     year = input('Digite el año YYYY: ')
     month = input('Digite el mes MM: ')
     day = input('Digite el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     lst = ctrl.accidentesPorFecha(cont, date)
-    print('Los tipos de crimenes cometidos en la fecha', date, 'fueron: ')
+    print('Los tipos de accidentes sucedidos en la fecha', date, 'fueron: ')
     iterator = it.newIterator(lst[1])
     i = 1
     while it.hasNext(iterator):
         print(i,'- ',it.next(iterator))
         i += 1
-    print('Para un total de ',lst[0],' crimenes')
+    print('Para un total de ',lst[0]['total'],' accidentes')
+    print('Total según severidad: ')
+    print('Severidad 1: ',lst[0]['1'])
+    print('Severidad 2: ',lst[0]['2'])
+    print('Severidad 3: ',lst[0]['3'])
+    print('Severidad 4: ',lst[0]['4'])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-while True:
-    printMenu()
-    inputs = int(input('Seleccione una opción para continuar\n-> '))
+def accidentesEnUnRangoDeFecha(cont):
+    t1_start = process_time() #tiempo inicial
+    initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
+    finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
+    lst = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate)
+    print("La cantidad total de accidentes ocurridos desde" +initialDate+ "hasta" +finalDate+ "fueron" ,lst(0), "accidentes" )
+    print("La severidad" ,lst(1), "fue la más común en estos accidentes")
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-    if inputs == 1:
-        print("\nInicializando.....")
-        # cont es el controlador que se usará de acá en adelante
-        cont = controller.init()
 
-    elif inputs == 2:
-        cargarAccidentes(cont)
+def conocerEstado (cont):
+    t1_start = process_time() #tiempo inicial
+    initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
+    finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
+    lst = ctrl.conocerEstado(cont,initialDate,finalDate)
+    print("El estado con más accidentes reportados es" ,lst(0))
+    print("La fecha donde hubo más accidentes fue" ,lst(1))
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-    elif inputs == 3:   #Req. 1
-        print("\nBuscando crimenes en un rango de fechas: ")
-        accidentesPorFecha(cont)
+def main():
+    cont = None
+    while True:
+        printMenu()
+        inputs = int(input('Seleccione una opción para continuar\n-> '))
 
-    elif inputs == 4:   #Req. 2
-        print("\nRequerimiento No 1 del reto 3: ")
+        if inputs == 1:   #Inicio y carga
+            print("\nInicializando.....")
+            # cont es el controlador que se usará de acá en adelante
+            cont = controller.init()
+            cargarAccidentes(cont)
 
-    elif inputs == 5:   #Req. 3
-        print("\nRequerimiento No 1 del reto 3: ")
+        elif inputs == 2:   #Req. 1
+            print("Buscando accidentes en un rango de fechas\n ")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                accidentesPorFecha(cont)
+            
 
-    elif inputs == 6:   #Req. 4
-        print("\nRequerimiento No 1 del reto 3: ")
+        elif inputs == 3:   #Req. 2
+            print("\nRequerimiento No 2 del reto 3: ")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+                
 
-    elif inputs == 7:   #Req. 5
-        print("\nRequerimiento No 1 del reto 3: ")
+        elif inputs == 4:   #Req. 3
+            print('Conocer los accidentes en un rango de fechas\n ')
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                accidentesEnUnRangoDeFecha(cont)
 
-    elif inputs == 8:   #Req. 6*
-        print("\nRequerimiento No 1 del reto 3: ")
+        elif inputs == 5:   #Req. 4
+            print("Conocer el estado con mas accidentes\n")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                conocerEstado(cont)
 
-    elif inputs == 9:   #Req. 7*    
-        print("\nRequerimiento No 1 del reto 3: ")
+        elif inputs == 6:   #Req. 5
+            print("\nRequerimiento No 5 del reto 3: ")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
 
-    elif inputs == 0:
-        sys.exit(0)
+        elif inputs == 7:   #Req. 6*
+            print("\nRequerimiento No 6 del reto 3: ")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
 
-    else:
-        print("Opcion incorrecta .....")
+        elif inputs == 8:   #Req. 7*    
+            print("\nRequerimiento No 7 del reto 3: ")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+
+        elif inputs == 0:
+            sys.exit(0)
+
+        else:
+            print("Opción incorrecta .....")
 main()
