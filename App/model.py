@@ -54,7 +54,7 @@ def newAnalyzer():
                 }
 
     analyzer['accidents'] = lt.newList('SINGLE_LINKED', compareIds)
-    analyzer['dateIndex'] = om.newMap(omaptype='BST',
+    analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     return analyzer
 
@@ -210,6 +210,44 @@ def accidentesPorFecha(cont, date):
             cantidad[severidad] += 1
     return (cantidad,accidents)
 
+
+def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)
+    accidents=getAccidentsByRange(cont,initialDate,finalDate)
+    size = lt.size(accidents)
+    cantidad = {'1':0,'2':0,'3':0,'4':0}
+    iterator = it.newIterator(accidents)
+    print(accidents)
+    while it.hasNext(iterator):
+        accident = it.next(iterator)
+        severidad = accident['Severity']
+        cantidad[severidad] += 1
+        # cantidad['total'] += 1
+    i = [(key,value) for key,value in cantidad.items()]
+    mayor = max(i)[0]
+    return (size,mayor)
+
+
+def conocerEstado (cont,initialDate,finalDate):
+    accidents = getAccidentsByRange(cont,initialDate,finalDate)
+    iterator = it.newIterator(accidents)
+    states = {}
+    mayor={}
+    while it.hasNext(iterator):
+        accident = it.next(iterator)
+        state = accident['State']
+        date = accident['Start_Time']
+        if date in mayor:
+            mayor[date]+=1
+        else: 
+            mayor[date]=1
+        if state in states:
+            states[state] += 1
+        else:
+            states[state] = 1
+    iss = [(key,value) for key,value in states.items()]
+    im  = [(key,value) for key,value in mayor.items()]
+    return (max(iss)[0], max(im)[0])
+    
 # ==============================
 # Funciones de Comparacion
 # ==============================
