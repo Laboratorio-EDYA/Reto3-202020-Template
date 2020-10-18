@@ -113,8 +113,7 @@ def getAccidentsByRange(analyzer, initialDate, finalDate):
                                   finalDate.date())
 
 
-def getAccidentsByRangeCode(analyzer, initialDate,
-                         offensecode):
+def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
     """
     Retorna el total de crimenes de un tipo especifico en una
     fecha determinada
@@ -127,13 +126,17 @@ def accidentesPorFecha(cont, date):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     return model.accidentesPorFecha(cont, date.date())
 
-def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate):
+def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
     return model.accidentesEnUnRangoDeFecha(cont,initialDate.date(),finalDate.date())
 
 
-def conocerEstado (cont,initialDate,finalDate):
+def conocerEstado (cont, initialDate, finalDate):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
     return model.conocerEstado(cont,initialDate.date(),finalDate.date())
+
+def accidentesAnteriores (cont, date):
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    return model.accidentesAnteriores(cont, date.date())

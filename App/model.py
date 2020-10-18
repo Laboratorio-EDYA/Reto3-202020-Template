@@ -118,9 +118,10 @@ def newDataEntry(accident):
     binario.
     """
     entry = {'offenseIndex': None, 'lstaccident': None}
-    entry['offenseIndex'] = m.newMap(numelements=30,
-                                     maptype='CHAINING',
-                                     comparefunction=compareOffenses)
+    entry['offenseIndex'] = m.newMap(loadfactor = 3,
+                                     numelements = 30,
+                                     maptype = 'CHAINING',
+                                     comparefunction = compareOffenses)
     entry['lstaccident'] = lt.newList('SINGLE_LINKED', compareDates)
     return entry
 
@@ -193,7 +194,7 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
 
-def accidentesPorFecha(cont, date):
+def accidentesPorFecha(cont, date):   #REQ. 1
     data = om.get(cont['dateIndex'],date)
     values = me.getValue(data)['offenseIndex']
     accidents = m.keySet(values)
@@ -210,8 +211,33 @@ def accidentesPorFecha(cont, date):
             cantidad[severidad] += 1
     return cantidad
 
+def accidentesAnteriores (cont, date):   # REQ. 1
+    initialDate = om.minKey(cont['dateIndex'])
+    finalDate = om.floor(cont['dateIndex'],date)
+    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+    cantidad = {'total': 0, 'fecha': {} }
+    iterator = it.newIterator(shaves)
+    while it.hasNext(iterator):
+        date = it.next(iterator)
+        data = om.get(cont['dateIndex'],date)
+        values = me.getValue(data)['offenseIndex']
+        accidents = m.keySet(values)
+        numero = 0
+        iterator2 = it.newIterator(accidents)
+        while it.hasNext(iterator2):
+            actual = m.get(values,it.next(iterator2))
+            data = me.getValue(actual)['lstoffenses']
+            cantidad['total'] += lt.size(data)
+            numero += lt.size(data)
+        cantidad['fecha'][date] = numero
+    mayor = ['',0]
+    for i in cantidad['fecha']:
+        if cantidad['fecha'][i] >= mayor[1]:
+            mayor[0] = i
+            mayor[1] = cantidad['fecha'][i]
+    return (cantidad['total'],mayor)
 
-def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)
+def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)   REQ. 3
     shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
     iterator = it.newIterator(shaves)
@@ -232,9 +258,9 @@ def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)
             mayor[1] = cantidad[i]
     return (total,mayor)
 
-def conocerEstado (cont,initialDate,finalDate):
+def conocerEstado (cont,initialDate,finalDate):   #REQ. 4
     shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
-    cantidad = {'total': 0, 'fecha': {}, 'state': {} }
+    cantidad = {'fecha': {}, 'state': {} }
     iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
         date = it.next(iterator)
@@ -246,7 +272,6 @@ def conocerEstado (cont,initialDate,finalDate):
         while it.hasNext(iterator2):
             actual = m.get(values,it.next(iterator2))
             data = me.getValue(actual)['lstoffenses']
-            cantidad['total'] += lt.size(data)
             numero += lt.size(data)
             siguiente = it.newIterator(data)
             while it.hasNext(siguiente):
@@ -267,9 +292,10 @@ def conocerEstado (cont,initialDate,finalDate):
         if cantidad['state'][i] >= mayorState[1]:
             mayorState[0] = i
             mayorState[1] = cantidad['state'][i]
-    return (cantidad['total'], mayorFecha, mayorState)
+    return (mayorFecha, mayorState)
                 
-    
+
+
 # ==============================
 # Funciones de Comparacion
 # ==============================

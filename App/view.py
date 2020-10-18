@@ -79,6 +79,8 @@ def cargarAccidentes(cont):
         accidentfile = accidentes2018
     elif anio == 2019:
         accidentfile = accidentes2019
+    elif anio == 0:
+        accidentfile = accidentesAll
     try:
         print("\nCargando información de accidentes .....")
         controller.loadData(cont, accidentfile)
@@ -95,22 +97,35 @@ def cargarAccidentes(cont):
 
 def accidentesPorFecha(cont):   #Req. 1
     t1_start = process_time() #tiempo inicial
-    year = input('Digite el año YYYY: ')
-    month = input('Digite el mes MM: ')
-    day = input('Digite el día DD: ')
+    year = input('Digita el año YYYY: ')
+    month = input('Digita el mes MM: ')
+    day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
-    lst = ctrl.accidentesPorFecha(cont, date)
-    print('Para un total de ',lst['total'],' accidentes')
+    data = ctrl.accidentesPorFecha(cont, date)
+    print('El total de accidentes reportados en la fecha '+date+' fue de ',data['total'],' accidentes')
     print('Total según severidad: ')
-    print('Severidad 1: ',lst['1'])
-    print('Severidad 2: ',lst['2'])
-    print('Severidad 3: ',lst['3'])
-    print('Severidad 4: ',lst['4'])
+    print('Severidad 1: ',data['1'])
+    print('Severidad 2: ',data['2'])
+    print('Severidad 3: ',data['3'])
+    print('Severidad 4: ',data['4'])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-def accidentesEnUnRangoDeFecha(cont):
+def accidentesAnteriores (cont):   #REQ. 2
+    t1_start = process_time() #tiempo inicial
+    year = input('Digita el año YYYY: ')
+    month = input('Digita el mes MM: ')
+    day = input('Digita el día DD: ')
+    date = year.strip() + '-' + month.strip() + '-' + day.strip()
+    data = ctrl.accidentesAnteriores(cont, date)
+    print(data[0], " accidentes fueron reportados antes de la fecha " +date)
+    print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad")
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+
+
+def accidentesEnUnRangoDeFecha(cont):   #REQ. 3
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
@@ -121,13 +136,13 @@ def accidentesEnUnRangoDeFecha(cont):
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-def conocerEstado (cont):
+def conocerEstado (cont):    #REQ. 4
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
     data = ctrl.conocerEstado(cont,initialDate,finalDate)
-    print("El estado con más accidentes reportados es" ,data[2][0])
-    print("La fecha donde hubo más accidentes fue" ,str(data[1][0]).replace('datetime.date(','').replace(')',''), 'con ',data[1][1], 'accidentes')
+    print("El estado con más accidentes reportados es" ,data[1][0])
+    print("La fecha donde hubo más accidentes fue" ,str(data[0][0]).replace('datetime.date(','').replace(')',''), 'con ',data[0][1], 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
@@ -138,7 +153,7 @@ def main():
         inputs = int(input('Seleccione una opción para continuar\n-> '))
 
         if inputs == 1:   #Inicio y carga
-            print("\nInicializando.....")
+            print("\nInicializando.....") 
             # cont es el controlador que se usará de acá en adelante
             cont = controller.init()
             cargarAccidentes(cont)
@@ -152,9 +167,11 @@ def main():
             
 
         elif inputs == 3:   #Req. 2
-            print("\nRequerimiento No 2 del reto 3: ")
+            print("Conocer los accidentes anteriores a una fecha\n")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                accidentesAnteriores (cont)
                 
 
         elif inputs == 4:   #Req. 3
