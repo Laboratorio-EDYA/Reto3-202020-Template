@@ -67,30 +67,52 @@ def printMenu():
     print("-"*75)
 
 # Menu principal
+def cargarporanio(cont, anio):
+    if cont[anio][0] != None:
+        accidentfile = cont[anio][1]
+        print("\nCargando información de accidentes .....")
+        controller.loadData(cont[anio][0], accidentfile)
+        print('Crimenes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont[anio][0])))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont[anio][0])))
+        print('Menor Llave: ' + str(controller.minKey(cont[anio][0])))
+        print('Mayor Llave: ' + str(controller.maxKey(cont[anio][0])))
 
 def cargarAccidentes(cont):
     t1_start = process_time() #tiempo inicial
     anio = int(input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n-> "))
     if anio == 2016:
-        accidentfile = accidentes2016
+        cont['2016'] = [ctrl.init(),accidentes2016]
+        cont['2017'] = [None]
+        cont['2018'] = [None]
+        cont['2019'] = [None]
     elif anio == 2017:
-        accidentfile = accidentes2017
+        cont['2016'] = [None]
+        cont['2017'] = [ctrl.init(),accidentes2017]
+        cont['2018'] = [None]
+        cont['2019'] = [None]
     elif anio == 2018:
-        accidentfile = accidentes2018
+        cont['2016'] = [None]
+        cont['2017'] = [None]
+        cont['2018'] = [ctrl.init(),accidentes2018]
+        cont['2019'] = [None]
     elif anio == 2019:
-        accidentfile = accidentes2019
-    elif anio == 0:
-        accidentfile = accidentesAll
-    try:
-        print("\nCargando información de accidentes .....")
-        controller.loadData(cont, accidentfile)
-        print('Crimenes cargados: ' + str(controller.accidentsSize(cont)))
-        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
-        print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
-        print('Menor Llave: ' + str(controller.minKey(cont)))
-        print('Mayor Llave: ' + str(controller.maxKey(cont)))
-    except:
-        print('¡¡KELLY ASEGURESE DE DIGITAR EL AÑO BIEN!!')
+        cont['2016'] = [None]
+        cont['2017'] = [None]
+        cont['2018'] = [None]
+        cont['2019'] = [ctrl.init(),accidentes2019]
+    elif anio == 0: 
+        cont['2016'] = [ctrl.init(),accidentes2016]
+        cont['2017'] = [ctrl.init(),accidentes2017]
+        cont['2018'] = [ctrl.init(),accidentes2018]
+        cont['2019'] = [ctrl.init(),accidentes2019]
+    #try:
+    cargarporanio(cont,'2016')
+    cargarporanio(cont,'2017')
+    cargarporanio(cont,'2018')
+    cargarporanio(cont,'2019')
+    #except:
+    #print('¡¡KELLY ASEGURESE DE DIGITAR EL AÑO BIEN!!')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
@@ -147,7 +169,8 @@ def conocerEstado (cont):    #REQ. 4
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 def main():
-    cont = None
+    cont = {}
+
     while True:
         printMenu()
         inputs = int(input('Seleccione una opción para continuar\n-> '))
@@ -155,7 +178,6 @@ def main():
         if inputs == 1:   #Inicio y carga
             print("\nInicializando.....") 
             # cont es el controlador que se usará de acá en adelante
-            cont = controller.init()
             cargarAccidentes(cont)
 
         elif inputs == 2:   #Req. 1
