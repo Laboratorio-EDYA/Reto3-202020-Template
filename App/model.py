@@ -119,7 +119,7 @@ def newDataEntry(accident):
     """
     entry = {'offenseIndex': None, 'lstaccident': None}
     entry['offenseIndex'] = m.newMap(loadfactor = 3,
-                                     numelements = 30,
+                                     numelements = 45000,
                                      maptype = 'CHAINING',
                                      comparefunction = compareOffenses)
     entry['lstaccident'] = lt.newList('SINGLE_LINKED', compareDates)
@@ -194,28 +194,30 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
 
-def accidentesPorFecha(cont, date):   #REQ. 1
-    data = om.get(cont['dateIndex'],date)
-    values = me.getValue(data)['offenseIndex']
-    accidents = m.keySet(values)
+def accidentesPorFecha(cont, date, anio):   #REQ. 1
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
-    iterator = it.newIterator(accidents)
-    while it.hasNext(iterator):
-        actual = m.get(values,it.next(iterator))
-        data = me.getValue(actual)['lstoffenses']
-        cantidad['total'] += lt.size(data)
-        siguiente = it.newIterator(data)
-        while it.hasNext(siguiente):
-            current = it.next(siguiente)
-            severidad = current['Severity']
-            cantidad[severidad] += 1
+    for i in range(2016,2020):
+        if str(i) in anio['anio'] or anio['anio'] == 0:
+            data = om.get(cont[str(i)][0]['dateIndex'],date)
+            values = me.getValue(data)['offenseIndex']
+            accidents = m.keySet(values)
+            iterator = it.newIterator(accidents)
+            while it.hasNext(iterator):
+                actual = m.get(values,it.next(iterator))
+                data = me.getValue(actual)['lstoffenses']
+                cantidad['total'] += lt.size(data)
+                siguiente = it.newIterator(data)
+                while it.hasNext(siguiente):
+                    current = it.next(siguiente)
+                    severidad = current['Severity']
+                    cantidad[severidad] += 1
     return cantidad
 
-def accidentesAnteriores (cont, date):   # REQ. 1
+def accidentesAnteriores (cont, date, anio):   # REQ. 1
+    cantidad = {'total': 0, 'fecha': {} }
     initialDate = om.minKey(cont['dateIndex'])
     finalDate = om.floor(cont['dateIndex'],date)
-    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
-    cantidad = {'total': 0, 'fecha': {} }
+    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)   
     iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
         date = it.next(iterator)

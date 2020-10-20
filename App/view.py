@@ -78,32 +78,30 @@ def cargarporanio(cont, anio):
         print('Menor Llave: ' + str(controller.minKey(cont[anio][0])))
         print('Mayor Llave: ' + str(controller.maxKey(cont[anio][0])))
 
-def cargarAccidentes(cont):
+def cargarAccidentes(cont, anio):
     t1_start = process_time() #tiempo inicial
-    anio = int(input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n-> "))
-    if anio == 2016:
+    anios = int(input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n* Digita 0 para cargar todos los archivos *\n-> "))
+    if anios == 2016:
         cont['2016'] = [ctrl.init(),accidentes2016]
-        cont['2017'] = [None]
-        cont['2018'] = [None]
-        cont['2019'] = [None]
-    elif anio == 2017:
-        cont['2016'] = [None]
+        anio['anio'] = '2016'
+        anio['type'] = 0
+    elif anios == 2017:
         cont['2017'] = [ctrl.init(),accidentes2017]
-        cont['2018'] = [None]
-        cont['2019'] = [None]
-    elif anio == 2018:
-        cont['2016'] = [None]
-        cont['2017'] = [None]
+        anio['anio'] = '2017'
+        anio['type'] = 0
+    elif anios == 2018:
         cont['2018'] = [ctrl.init(),accidentes2018]
-        cont['2019'] = [None]
-    elif anio == 2019:
-        cont['2016'] = [None]
-        cont['2017'] = [None]
-        cont['2018'] = [None]
+        anio['anio'] = '2018'
+        anio['type'] = 0
+    elif anios == 2019:
         cont['2019'] = [ctrl.init(),accidentes2019]
-    elif anio == 0: 
+        anio['anio'] = '2019'
+        anio['type'] = 0
+    elif anios == 0: 
+        anio['anio'] = 0
+        anio['type'] = 1
         cont['2016'] = [ctrl.init(),accidentes2016]
-        cont['2017'] = [ctrl.init(),accidentes2017]
+        cont['2017'] = [ctrl.init(),accidentes2017] 
         cont['2018'] = [ctrl.init(),accidentes2018]
         cont['2019'] = [ctrl.init(),accidentes2019]
     #try:
@@ -112,18 +110,19 @@ def cargarAccidentes(cont):
     cargarporanio(cont,'2018')
     cargarporanio(cont,'2019')
     #except:
-    #print('¡¡KELLY ASEGURESE DE DIGITAR EL AÑO BIEN!!')
+    #    print('¡¡KELLY ASEGURESE DE DIGITAR EL AÑO BIEN!!')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+    return cont
 
 
-def accidentesPorFecha(cont):   #Req. 1
+def accidentesPorFecha(cont, anio):   #Req. 1
     t1_start = process_time() #tiempo inicial
     year = input('Digita el año YYYY: ')
     month = input('Digita el mes MM: ')
     day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
-    data = ctrl.accidentesPorFecha(cont, date)
+    data = ctrl.accidentesPorFecha(cont, date, anio)
     print('El total de accidentes reportados en la fecha '+date+' fue de ',data['total'],' accidentes')
     print('Total según severidad: ')
     print('Severidad 1: ',data['1'])
@@ -170,7 +169,7 @@ def conocerEstado (cont):    #REQ. 4
 
 def main():
     cont = {}
-
+    anio = {}
     while True:
         printMenu()
         inputs = int(input('Seleccione una opción para continuar\n-> '))
@@ -178,16 +177,15 @@ def main():
         if inputs == 1:   #Inicio y carga
             print("\nInicializando.....") 
             # cont es el controlador que se usará de acá en adelante
-            cargarAccidentes(cont)
+            cont = {'2016': [None], '2017': [None], '2018': [None],'2019': [None]}
+            cargarAccidentes(cont, anio)
 
         elif inputs == 2:   #Req. 1
             print("Buscando accidentes en un rango de fechas\n ")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                accidentesPorFecha(cont)
-            
-
+                accidentesPorFecha(cont, anio)
         elif inputs == 3:   #Req. 2
             print("Conocer los accidentes anteriores a una fecha\n")
             if cont == None:

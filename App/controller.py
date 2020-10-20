@@ -122,9 +122,9 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
     return model.getAccidentsByRangeCode(analyzer, initialDate.date(),
                                       offensecode)
 
-def accidentesPorFecha(cont, date):
+def accidentesPorFecha(cont, date, anio):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
-    return model.accidentesPorFecha(cont, date.date())
+    return model.accidentesPorFecha(cont, date.date(), anio)
 
 def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
