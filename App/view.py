@@ -146,6 +146,16 @@ def conocerEstado (cont):    #REQ. 4
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
+def conocerZonaGeografica (cont):
+    t1_start = process_time() #tiempo inicial
+    latitud = float(input("Digita la latitud: ").replace('.',''))
+    longitud = float(input("Digita la longitud: ").replace('.',''))
+    radio = float(input("Digita la distancia del radio en km (recuerde que un grado es 111,12km): "))
+    x = ctrl.conocerZonaGeografica(cont,latitud,longitud,radio)
+    print("Hay ",x, " accidentes en el radio: ",radio)
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+    #111.12km
 def main():
     cont = None
     while True:
@@ -197,6 +207,8 @@ def main():
             print("\nRequerimiento No 6 del reto 3: ")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                conocerZonaGeografica(cont)
 
         elif inputs == 8:   #Req. 7*    
             print("\nRequerimiento No 7 del reto 3: ")

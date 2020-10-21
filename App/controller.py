@@ -140,3 +140,7 @@ def conocerEstado (cont, initialDate, finalDate):
 def accidentesAnteriores (cont, date):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     return model.accidentesAnteriores(cont, date.date())
+
+def conocerZonaGeografica(cont,latitud,longitud,radio):
+    return model.conocerZonaGeografica(cont,latitud,longitud,radio)
+    

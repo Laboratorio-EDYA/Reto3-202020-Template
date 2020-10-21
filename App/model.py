@@ -293,7 +293,45 @@ def conocerEstado (cont,initialDate,finalDate):   #REQ. 4
             mayorState[0] = i
             mayorState[1] = cantidad['state'][i]
     return (mayorFecha, mayorState)
+
+def dentroDelRadio(cont, radio, longitud, latitud, current):
+    loc_lng = float(current['Start_Lng'].replace('.',''))
+    loc_lat = float(current['Start_Lat'].replace('.',''))
+    extremo_y  = latitud+radio
+    extremo_x    = longitud+radio
+    if extremo_y >= loc_lat and extremo_x >= loc_lng:
+        return True
+
+def conocerZonaGeografica(cont, radio, longitud, latitud):
+    """
+    cont: analyzer
+    Radio: En que se encuentran los accidentes
+    longitud: coordenada
+    latitud: coordenada
+    centro=(latitud,longitud)
+
+    """
+    initialDate = om.minKey(cont['dateIndex'])
+    finalDate = om.floor(cont['dateIndex'],om.maxKey(cont['dateIndex'])) 
+    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+    cantidad = 0
+    iterator = it.newIterator(shaves)
+    while it.hasNext(iterator):
+        date = it.next(iterator)
+        data = om.get(cont['dateIndex'],date)
+        values = me.getValue(data)['offenseIndex']
+        accidents = m.keySet(values)
+        iterator2 = it.newIterator(accidents)
+        while it.hasNext(iterator2):
+            actual = m.get(values,it.next(iterator2))
+            data = me.getValue(actual)['lstoffenses']
+            siguiente = it.newIterator(data)
+            while it.hasNext(siguiente):
+                current = it.next(siguiente)
+                if dentroDelRadio(cont, radio, longitud, latitud, current) == True:
+                    cantidad += 1
                 
+    return cantidad
 
 
 # ==============================
