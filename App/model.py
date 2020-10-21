@@ -197,7 +197,7 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
 def accidentesPorFecha(cont, date, anio):   #REQ. 1
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
     for i in range(2016,2020):
-        if str(i) in anio['anio'] or anio['anio'] == 0:
+        if cont[str(i)][0] != None:
             data = om.get(cont[str(i)][0]['dateIndex'],date)
             values = me.getValue(data)['offenseIndex']
             accidents = m.keySet(values)
@@ -213,25 +213,56 @@ def accidentesPorFecha(cont, date, anio):   #REQ. 1
                     cantidad[severidad] += 1
     return cantidad
 
+def llavesHasta(cont, date, anio):
+    llaves = {}
+    for i in range(2016,2020):
+        if cont[str(i)][0] != None:
+            if str(i) not in str(date):
+                initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
+                finalDate = om.maxKey(cont[str(i)][0]['dateIndex'])
+                llaves[str(i)] = om.keys(cont['dateIndex'],initialDate,finalDate)
+            else:
+                initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
+                finalDate = om.floor(cont[str(i)][0]['dateIndex'],date)
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'],initialDate,finalDate)
+                break
+    return llaves
+
+def llavesEnRango(cont, initialDate, finalDate, anio):
+    llaves = {}
+    if anio['type'] == 0:
+            llaves[anio['anio']] = om.keys(cont[anio['anio']][0]['dateIndex'], initialDate, finalDate)
+    else: 
+        for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
+            if str(i) in str(initialDate):
+                mayor = om.maxKey(cont[str(i)][0]['dateIndex'])
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], initialDate, mayor)
+            elif str(i) in str(finalDate):
+                menor = om.minKey(cont[str(i)][0]['dateIndex'])
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], menor, finalDate)
+            else:
+                llaves[str(i)] = om.keySet(cont[str(i)][0]['dateIndex'])
+    return llaves
+
 def accidentesAnteriores (cont, date, anio):   # REQ. 1
     cantidad = {'total': 0, 'fecha': {} }
-    initialDate = om.minKey(cont['dateIndex'])
-    finalDate = om.floor(cont['dateIndex'],date)
-    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)   
-    iterator = it.newIterator(shaves)
-    while it.hasNext(iterator):
-        date = it.next(iterator)
-        data = om.get(cont['dateIndex'],date)
-        values = me.getValue(data)['offenseIndex']
-        accidents = m.keySet(values)
-        numero = 0
-        iterator2 = it.newIterator(accidents)
-        while it.hasNext(iterator2):
-            actual = m.get(values,it.next(iterator2))
-            data = me.getValue(actual)['lstoffenses']
-            cantidad['total'] += lt.size(data)
-            numero += lt.size(data)
-        cantidad['fecha'][date] = numero
+    llaves = llavesHasta(cont, date, anio)
+    for i in range(2016,2020):
+        if cont[str(i)][0] != None:
+            iterator = it.newIterator(llaves[str(i)])
+            while it.hasNext(iterator):
+                date = it.next(iterator)
+                data = om.get(cont[str(i)][0]['dateIndex'],date)
+                values = me.getValue(data)['offenseIndex']
+                accidents = m.keySet(values)
+                numero = 0
+                iterator2 = it.newIterator(accidents)
+                while it.hasNext(iterator2):
+                    actual = m.get(values,it.next(iterator2))
+                    data = me.getValue(actual)['lstoffenses']
+                    cantidad['total'] += lt.size(data)
+                    numero += lt.size(data)
+                cantidad['fecha'][date] = numero
     mayor = ['',0]
     for i in cantidad['fecha']:
         if cantidad['fecha'][i] >= mayor[1]:
@@ -239,61 +270,63 @@ def accidentesAnteriores (cont, date, anio):   # REQ. 1
             mayor[1] = cantidad['fecha'][i]
     return (cantidad['total'],mayor)
 
-def accidentesEnUnRangoDeFecha(cont,initialDate,finalDate): #O(N)   REQ. 3
-    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate, anio): #O(N)   REQ. 3
+    llaves = llavesEnRango(cont, initialDate, finalDate, anio)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
-    iterator = it.newIterator(shaves)
-    while it.hasNext(iterator):
-        date = it.next(iterator)
-        cantidades = accidentesPorFecha(cont,date)
-        cantidad['total'] += cantidades['total']
-        cantidad['1'] += cantidades['1']
-        cantidad['2'] += cantidades['2']
-        cantidad['3'] += cantidades['3']
-        cantidad['4'] += cantidades['4']
-    mayor = ['',0]
-    total = cantidad['total']
-    del cantidad['total']
-    for i in cantidad:
-        if cantidad[i] >= mayor[1]:
-            mayor[0] = i
-            mayor[1] = cantidad[i]
+    for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
+        iterator = it.newIterator(llaves[str(i)])
+        while it.hasNext(iterator):
+            date = it.next(iterator)
+            cantidades = accidentesPorFecha(cont, date, anio)
+            cantidad['total'] += cantidades['total']
+            cantidad['1'] += cantidades['1']
+            cantidad['2'] += cantidades['2']
+            cantidad['3'] += cantidades['3']
+            cantidad['4'] += cantidades['4']
+        mayor = ['',0]
+        total = cantidad['total']
+        del cantidad['total']
+        for i in cantidad:
+            if cantidad[i] >= mayor[1]:
+                mayor[0] = i
+                mayor[1] = cantidad[i]
     return (total,mayor)
 
-def conocerEstado (cont,initialDate,finalDate):   #REQ. 4
-    shaves = om.keys(cont['dateIndex'],initialDate,finalDate)
+def conocerEstado (cont,initialDate,finalDate, anio):   #REQ. 4
+    shaves = llavesEnRango(cont, initialDate, finalDate, anio)
     cantidad = {'fecha': {}, 'state': {} }
-    iterator = it.newIterator(shaves)
-    while it.hasNext(iterator):
-        date = it.next(iterator)
-        data = om.get(cont['dateIndex'],date)
-        values = me.getValue(data)['offenseIndex']
-        accidents = m.keySet(values)
-        numero = 0
-        iterator2 = it.newIterator(accidents)
-        while it.hasNext(iterator2):
-            actual = m.get(values,it.next(iterator2))
-            data = me.getValue(actual)['lstoffenses']
-            numero += lt.size(data)
-            siguiente = it.newIterator(data)
-            while it.hasNext(siguiente):
-                current = it.next(siguiente)
-                state = current['State']
-                if state not in cantidad['state']:
-                    cantidad['state'][state] = 1
-                else: 
-                    cantidad['state'][state] += 1
-        cantidad['fecha'][date] = numero
-    mayorFecha = ['',0]
-    for i in cantidad['fecha']:
-        if cantidad['fecha'][i] >= mayorFecha[1]:
-            mayorFecha[0] = i
-            mayorFecha[1] = cantidad['fecha'][i]
-    mayorState = ['',0]
-    for i in cantidad['state']:
-        if cantidad['state'][i] >= mayorState[1]:
-            mayorState[0] = i
-            mayorState[1] = cantidad['state'][i]
+    for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
+        iterator = it.newIterator(shaves[str(i)])
+        while it.hasNext(iterator):
+            date = it.next(iterator)
+            data = om.get(cont[str(i)][0]['dateIndex'],date)
+            values = me.getValue(data)['offenseIndex']
+            accidents = m.keySet(values)
+            numero = 0
+            iterator2 = it.newIterator(accidents)
+            while it.hasNext(iterator2):
+                actual = m.get(values,it.next(iterator2))
+                data = me.getValue(actual)['lstoffenses']
+                numero += lt.size(data)
+                siguiente = it.newIterator(data)
+                while it.hasNext(siguiente):
+                    current = it.next(siguiente)
+                    state = current['State']
+                    if state not in cantidad['state']:
+                        cantidad['state'][state] = 1
+                    else: 
+                        cantidad['state'][state] += 1
+            cantidad['fecha'][date] = numero
+        mayorFecha = ['',0]
+        for i in cantidad['fecha']:
+            if cantidad['fecha'][i] >= mayorFecha[1]:
+                mayorFecha[0] = i
+                mayorFecha[1] = cantidad['fecha'][i]
+        mayorState = ['',0]
+        for i in cantidad['state']:
+            if cantidad['state'][i] >= mayorState[1]:
+                mayorState[0] = i
+                mayorState[1] = cantidad['state'][i]
     return (mayorFecha, mayorState)
                 
 

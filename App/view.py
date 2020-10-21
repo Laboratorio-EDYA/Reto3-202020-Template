@@ -133,35 +133,35 @@ def accidentesPorFecha(cont, anio):   #Req. 1
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-def accidentesAnteriores (cont):   #REQ. 2
+def accidentesAnteriores (cont, anio):   #REQ. 2
     t1_start = process_time() #tiempo inicial
     year = input('Digita el año YYYY: ')
     month = input('Digita el mes MM: ')
     day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
-    data = ctrl.accidentesAnteriores(cont, date)
+    data = ctrl.accidentesAnteriores(cont, date, anio)
     print(data[0], " accidentes fueron reportados antes de la fecha " +date)
     print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad")
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-def accidentesEnUnRangoDeFecha(cont):   #REQ. 3
+def accidentesEnUnRangoDeFecha(cont, anio):   #REQ. 3
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
-    data = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate)
+    data = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate, anio)
     print("La cantidad total de accidentes ocurridos desde " +initialDate+ " hasta " +finalDate+ " fueron" ,data[0], "accidentes" )
     print("La severidad" ,data[1][0], "fue la más común en estos accidentes, con un total de ",data[1][1])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
 
-def conocerEstado (cont):    #REQ. 4
+def conocerEstado (cont, anio):    #REQ. 4
     t1_start = process_time() #tiempo inicial
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
-    data = ctrl.conocerEstado(cont,initialDate,finalDate)
+    data = ctrl.conocerEstado(cont,initialDate,finalDate, anio)
     print("El estado con más accidentes reportados es" ,data[1][0])
     print("La fecha donde hubo más accidentes fue" ,str(data[0][0]).replace('datetime.date(','').replace(')',''), 'con ',data[0][1], 'accidentes')
     t1_stop = process_time() #tiempo final
@@ -191,7 +191,7 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                accidentesAnteriores (cont)
+                accidentesAnteriores (cont, anio)
                 
 
         elif inputs == 4:   #Req. 3
@@ -199,14 +199,14 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                accidentesEnUnRangoDeFecha(cont)
+                accidentesEnUnRangoDeFecha(cont, anio)
 
         elif inputs == 5:   #Req. 4
             print("Conocer el estado con mas accidentes\n")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                conocerEstado(cont)
+                conocerEstado(cont, anio)
 
         elif inputs == 6:   #Req. 5
             print("\nRequerimiento No 5 del reto 3: ")

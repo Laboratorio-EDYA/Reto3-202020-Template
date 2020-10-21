@@ -126,17 +126,17 @@ def accidentesPorFecha(cont, date, anio):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     return model.accidentesPorFecha(cont, date.date(), anio)
 
-def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate):
+def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate, anio):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    return model.accidentesEnUnRangoDeFecha(cont,initialDate.date(),finalDate.date())
+    return model.accidentesEnUnRangoDeFecha(cont,initialDate.date(),finalDate.date(), anio)
 
 
-def conocerEstado (cont, initialDate, finalDate):
+def conocerEstado (cont, initialDate, finalDate, anio):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    return model.conocerEstado(cont,initialDate.date(),finalDate.date())
+    return model.conocerEstado(cont,initialDate.date(),finalDate.date(), anio)
 
-def accidentesAnteriores (cont, date):
+def accidentesAnteriores (cont, date, anio):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
-    return model.accidentesAnteriores(cont, date.date())
+    return model.accidentesAnteriores(cont, date.date(), anio)
