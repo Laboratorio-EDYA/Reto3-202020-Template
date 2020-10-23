@@ -80,25 +80,25 @@ def cargarporanio(cont, anio):
 
 def cargarAccidentes(cont, anio):
     t1_start = process_time() #tiempo inicial
-    anios = int(input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n* Digita 0 para cargar todos los archivos *\n-> "))
-    if anios == 2016:
+    anios = input("\nEscriba el año de los accidentes que desea cargar (entre 2016 y 2019)\n* Digita 0 para cargar todos los archivos *\n-> ")
+    if anios == '2016':
         cont['2016'] = [ctrl.init(),accidentes2016]
         anio['anio'] = '2016'
         anio['type'] = 0
-    elif anios == 2017:
+    elif anios == '2017':
         cont['2017'] = [ctrl.init(),accidentes2017]
         anio['anio'] = '2017'
         anio['type'] = 0
-    elif anios == 2018:
+    elif anios == '2018':
         cont['2018'] = [ctrl.init(),accidentes2018]
         anio['anio'] = '2018'
         anio['type'] = 0
-    elif anios == 2019:
+    elif anios == '2019':
         cont['2019'] = [ctrl.init(),accidentes2019]
         anio['anio'] = '2019'
         anio['type'] = 0
-    elif anios == 0: 
-        anio['anio'] = 0
+    elif anios == '0': 
+        anio['anio'] = '0'
         anio['type'] = 1
         cont['2016'] = [ctrl.init(),accidentes2016]
         cont['2017'] = [ctrl.init(),accidentes2017] 
@@ -167,6 +167,49 @@ def conocerEstado (cont):    #REQ. 4
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
+def conocerHoras (cont, anio):   #REQ. 5
+    t1_start = process_time() #tiempo inicial
+    initialHour = ''
+    finalHour = ''
+    initialHourH = int(input('Digita las horas de la hora inicial en formato HH: '))
+    initialHourM = int(input('Digita los minutos de la hora inicial en formato MM: '))
+    finalHourH = int(input('Digita las horas de la hora final en formato HH: '))
+    finalHourM = int(input('Digita los minutos de la hora final en formato MM: '))
+    if initialHourM > 60 or initialHourH > 24 or finalHourM > 60 or finalHourH > 24:
+        print('¡¡ KELLY, UNA HORA TIENE 60 MINUTOS Y UN DÍA 24 HORAS !!')
+    else:
+        if initialHourM < 15:
+            initialHourM = '00'
+            initialHour = str(initialHourH) + ':' + initialHourM
+        elif (initialHourM >= 15 and initialHourM <= 45) or initialHourM == 30:    
+            initialHourM = '30'
+            initialHour = str(initialHourH) + ':' + initialHourM
+        elif initialHourM <= 60:
+            initialHourM = '00'
+            initialHourH += 1
+            initialHour = str(initialHourH) + ':' + initialHourM
+        if finalHourM < 15:
+            finalHourM = '00'
+            finalHour = str(finalHourH) + ':' + finalHourM
+        elif (finalHourM >= 15 and finalHourM <= 45) or finalHourM == 30:
+            finalHourM = '30'
+            finalHour = str(finalHourH) + ':' + finalHourM
+        elif finalHourM <= 60:
+            finalHourM = '00'
+            finalHourH += 1
+            finalHour = str(finalHourH) + ':' + finalHourM
+        data = ctrl.conocerHoras(cont, initialHour, finalHour, anio)
+    print('Desde las '+initialHour+' hasta las '+finalHour+', se registraron ',data[0]['total'],' accidentes')
+    print('Clasificados por severidad: ')
+    print('Severidad 1:   ',data[0]['1'],' accidentes')
+    print('Severidad 2:   ',data[0]['2'],' accidentes')
+    print('Severidad 3:   ',data[0]['3'],' accidentes')
+    print('Severidad 4:   ',data[0]['4'],' accidentes')
+    print('Estos accidentes representan el ',data[1],'% de la totalidad de accidentes registrados')
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+
+
 def main():
     cont = {}
     anio = {}
@@ -212,6 +255,8 @@ def main():
             print("\nRequerimiento No 5 del reto 3: ")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                conocerHoras(cont, anio)
 
         elif inputs == 7:   #Req. 6*
             print("\nRequerimiento No 6 del reto 3: ")
