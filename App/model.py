@@ -232,11 +232,7 @@ def accidentesPorHora(cont, time, anio):   #REQ. 0.5
 def accidentesPorFecha(cont, date, anio):   #REQ. 1
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
     for i in range(2016,2020):
-<<<<<<< HEAD
-        if str(i) in anio['anio'] or anio['anio'] == 0:                                               
-=======
         if cont[str(i)][0] != None:
->>>>>>> master
             data = om.get(cont[str(i)][0]['dateIndex'],date)
             values = me.getValue(data)['offenseIndex']
             accidents = m.keySet(values)
@@ -367,8 +363,6 @@ def conocerEstado (cont,initialDate,finalDate, anio):   #REQ. 4
                 mayorState[0] = i
                 mayorState[1] = cantidad['state'][i]
     return (mayorFecha, mayorState)
-<<<<<<< HEAD
-=======
 
 def dentroDelRadio(cont, radio, longitud, latitud, current):
     loc_lng = float(current['Start_Lng'].replace('.',''))
@@ -411,7 +405,6 @@ def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
                             cantidad += 1
                 
     return cantidad
->>>>>>> master
 
 def conocerHoras(cont, initialHour, finalHour, anio):
     shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
