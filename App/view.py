@@ -28,8 +28,6 @@ assert config
 from time import process_time
 from App import controller as ctrl
 
-
-
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion hace la solicitud 
@@ -50,7 +48,6 @@ accidentes2019 = 'us_accidents_dis_2019.csv'
 #  Menu principal
 # ___________________________________________________
 
-
 def printMenu():
     print("\n")
     print("-"*75)
@@ -66,7 +63,6 @@ def printMenu():
     print("0- Salir")
     print("-"*75)
 
-# Menu principal
 def cargarporanio(cont, anio):
     if cont[anio][0] != None:
         accidentfile = cont[anio][1]
@@ -115,7 +111,6 @@ def cargarAccidentes(cont, anio):
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
     return cont
 
-
 def accidentesPorFecha(cont, anio):   #Req. 1
     t1_start = process_time() #tiempo inicial
     year = input('Digita el año YYYY: ')
@@ -132,7 +127,6 @@ def accidentesPorFecha(cont, anio):   #Req. 1
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-
 def accidentesAnteriores (cont, anio):   #REQ. 2
     t1_start = process_time() #tiempo inicial
     year = input('Digita el año YYYY: ')
@@ -141,10 +135,9 @@ def accidentesAnteriores (cont, anio):   #REQ. 2
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     data = ctrl.accidentesAnteriores(cont, date, anio)
     print(data[0], " accidentes fueron reportados antes de la fecha " +date)
-    print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad")
+    print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad, con ", str(data[1][1]), 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-
 
 def accidentesEnUnRangoDeFecha(cont, anio):   #REQ. 3
     t1_start = process_time() #tiempo inicial
@@ -155,7 +148,6 @@ def accidentesEnUnRangoDeFecha(cont, anio):   #REQ. 3
     print("La severidad" ,data[1][0], "fue la más común en estos accidentes, con un total de ",data[1][1])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-
 
 def conocerEstado (cont, anio):    #REQ. 4
     t1_start = process_time() #tiempo inicial
@@ -242,4 +234,5 @@ def main():
 
         else:
             print("Opción incorrecta .....")
+
 main()
