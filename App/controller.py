@@ -129,7 +129,14 @@ def conocerEstado (cont, initialDate, finalDate, anio):
 
 def accidentesAnteriores (cont, date, anio):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
-    return model.accidentesAnteriores(cont, date.date(), anio)
+    return model.accidentesAnteriores(cont, date.date())
+
+def conocerHoras(cont, initialHour, finalHour, anio):
+    initialHour1 = datetime.datetime.strptime(initialHour, '%H:%M')
+    finalHour1 = datetime.datetime.strptime(finalHour, '%H:%M')
+    initialHour = (initialHour1.hour,initialHour1.minute)
+    finalHour = (finalHour1.hour,finalHour1.minute)
+    return model.conocerHoras(cont,initialHour,finalHour,anio)
 
 def conocerZonaGeografica(cont,latitud,longitud,radio,anio):
     return model.conocerZonaGeografica(cont,latitud,longitud,radio,anio)

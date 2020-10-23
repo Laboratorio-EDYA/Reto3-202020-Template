@@ -49,21 +49,22 @@ def newAnalyzer():
     Retorna el analizador inicializado.
     """
     analyzer = {'accidents': None,
-                'dateIndex': None
-                }
+                'dateIndex': None,
+                'timeIndex': None}
 
     analyzer['accidents'] = lt.newList('SINGLE_LINKED', compareIds)
-    analyzer['dateIndex'] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareDates)
+    analyzer['dateIndex'] = om.newMap(omaptype = 'RBT',
+                                      comparefunction = compareDates)
+    analyzer['timeIndex'] = om.newMap(omaptype = 'RBT',
+                                      comparefunction = compareTime)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 
 def addAccident(analyzer, accident):
-    """
-    """
     lt.addLast(analyzer['accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
+    updateTimeIndex(analyzer['timeIndex'], accident)
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -81,6 +82,20 @@ def updateDateIndex(map, accident):
     if entry is None:
         datentry = newDataEntry(accident)
         om.put(map, accidentdate.date(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addDateIndex(datentry, accident)
+    return map
+
+
+def updateTimeIndex(map, accident):
+    occurreddate = accident['Start_Time']
+    accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
+    accidenttime = (accidenttime1.hour,accidenttime1.minute)
+    entry = om.get(map, accidenttime)
+    if entry is None:
+        datentry = newDataEntry(accident)
+        om.put(map, accidenttime, datentry)
     else:
         datentry = me.getValue(entry)
     addDateIndex(datentry, accident)
@@ -179,9 +194,25 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
 
-# ==============================
-# Funciones de requerimientos
-# ==============================
+def accidentesPorHora(cont, time, anio):   #REQ. 0.5
+    cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
+    for i in range(2016,2020):
+        if str(i) in anio['anio'] or anio['anio'] == 0:                                               
+            data = om.get(cont,time)
+            values = me.getValue(data)['offenseIndex']
+            accidents = m.keySet(values)
+            iterator = it.newIterator(accidents)
+            while it.hasNext(iterator):
+                actual = m.get(values,it.next(iterator))
+                data = me.getValue(actual)['lstoffenses']
+                cantidad['total'] += lt.size(data)
+                siguiente = it.newIterator(data)
+                while it.hasNext(siguiente):
+                    current = it.next(siguiente)
+                    severidad = current['Severity']
+                    cantidad[severidad] += 1
+    return cantidad
+
 
 def accidentesPorFecha(cont, date, anio):   #REQ. 1
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
@@ -315,6 +346,22 @@ def llavesHasta(cont, date):
                 break
     return llaves
 
+def conocerHoras(cont, initialHour, finalHour, anio):
+    shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
+    cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
+    total = om.size(cont[anio['anio']][0]['timeIndex'])
+    iterator = it.newIterator(shaves)
+    while it.hasNext(iterator):
+        time = it.next(iterator)
+        cantidades = accidentesPorHora(cont[anio['anio']][0]['timeIndex'],time, anio)
+        cantidad['total'] += cantidades['total']
+        cantidad['1'] += cantidades['1']
+        cantidad['2'] += cantidades['2']
+        cantidad['3'] += cantidades['3']
+        cantidad['4'] += cantidades['4']
+    porcentaje = round(((cantidad['total'] * 100) / total),2)
+    return (cantidad,porcentaje)
+
 def llavesEnRango(cont, initialDate, finalDate, anio):
     llaves = {}
     if anio['type'] == 0:
@@ -386,6 +433,18 @@ def compareDates(date1, date2):
     if (date1 == date2):
         return 0
     elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+def compareTime(time1, time2):
+    """
+    Compara dos ids de libros, id es un identificador
+    y entry una pareja llave-valor
+    """
+    if (time1 == time2):
+        return 0
+    elif (time1 > time2):
         return 1
     else:
         return -1
