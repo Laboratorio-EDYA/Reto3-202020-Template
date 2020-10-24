@@ -363,7 +363,7 @@ def llavesHasta(cont, date):
 def conocerHoras(cont, initialHour, finalHour, anio):
     shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
-    total = om.size(cont[anio['anio']][0]['timeIndex'])
+    total = accidentsSize(cont[anio['anio']][0])
     iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
         time = it.next(iterator)

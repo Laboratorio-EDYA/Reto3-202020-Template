@@ -68,18 +68,11 @@ def cargarporanio(cont, anio):
         accidentfile = cont[anio][1]
         print("\nCargando información de accidentes .....")
         controller.loadData(cont[anio][0], accidentfile)
-        print('Crimenes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
-        print('Altura del arbol 1: ' + str(controller.indexHeight(cont[anio][0])[0]))
-        print('Elementos en el arbol 1: ' + str(controller.indexSize(cont[anio][0])[0]))
-
-        print('Menor Llave 1: ' + str(om.minKey(cont[anio][0]['dateIndex'])))
-        print('Mayor Llave 1: ' + str(om.maxKey(cont[anio][0]['dateIndex'])))
-
-        print('Crimenes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
-        print('Altura del arbol 2: ' + str(controller.indexHeight(cont[anio][0])[1]))
-        print('Elementos en el arbol 2: ' + str(controller.indexSize(cont[anio][0])[1]))
-        print('Menor Llave 2: ' + str(om.minKey(cont[anio][0]['timeIndex'])))
-        print('Mayor Llave 2: ' + str(om.maxKey(cont[anio][0]['timeIndex'])))
+        print('Accidentes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont[anio][0])))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont[anio][0])))
+        print('Menor Llave: ' + str(controller.minKey(cont[anio][0])))
+        print('Mayor Llave: ' + str(controller.maxKey(cont[anio][0])))
 
 def cargarAccidentes(cont, anio):
     t1_start = process_time() #tiempo inicial
@@ -125,7 +118,7 @@ def accidentesPorFecha(cont, anio):   #Req. 1
     day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     data = ctrl.accidentesPorFecha(cont, date, anio)
-    print('El total de accidentes reportados en la fecha '+date+' fue de ',data['total'],' accidentes')
+    print('\nEl total de accidentes reportados en la fecha '+date+' fue de ',data['total'],' accidentes')
     print('Total según severidad: ')
     print('Severidad 1: ',data['1'])
     print('Severidad 2: ',data['2'])
@@ -141,7 +134,7 @@ def accidentesAnteriores (cont, anio):   #REQ. 2
     day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     data = ctrl.accidentesAnteriores(cont, date, anio)
-    print(data[0], " accidentes fueron reportados antes de la fecha " +date)
+    print('\n'data[0], " accidentes fueron reportados antes de la fecha " +date)
     print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad, con ", str(data[1][1]), 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
@@ -151,7 +144,7 @@ def accidentesEnUnRangoDeFecha(cont, anio):   #REQ. 3
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
     data = ctrl.accidentesEnUnRangoDeFecha(cont,initialDate,finalDate, anio)
-    print("La cantidad total de accidentes ocurridos desde " +initialDate+ " hasta " +finalDate+ " fueron" ,data[0], "accidentes" )
+    print("\nLa cantidad total de accidentes ocurridos desde " +initialDate+ " hasta " +finalDate+ " fueron" ,data[0], "accidentes" )
     print("La severidad" ,data[1][0], "fue la más común en estos accidentes, con un total de ",data[1][1])
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
@@ -161,7 +154,7 @@ def conocerEstado (cont, anio):    #REQ. 4
     initialDate = input("Digita la fecha inicial en formato YYYY-MM-DD: ")
     finalDate = input("Digita la fecha final en formato YYYY-MM-DD: ")
     data = ctrl.conocerEstado(cont,initialDate,finalDate, anio)
-    print("El estado con más accidentes reportados es" ,data[1][0])
+    print("\nEl estado con más accidentes reportados es" ,data[1][0])
     print("La fecha donde hubo más accidentes fue" ,str(data[0][0]).replace('datetime.date(','').replace(')',''), 'con ',data[0][1], 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
@@ -198,7 +191,7 @@ def conocerHoras (cont, anio):   #REQ. 5
             finalHourH += 1
             finalHour = str(finalHourH) + ':' + finalHourM
         data = ctrl.conocerHoras(cont, initialHour, finalHour, anio)
-    print('Desde las '+initialHour+' hasta las '+finalHour+', se registraron ',data[0]['total'],' accidentes')
+    print('\nDesde las '+initialHour+' hasta las '+finalHour+', se registraron ',data[0]['total'],' accidentes')
     print('Clasificados por severidad: ')
     print('Severidad 1:   ',data[0]['1'],' accidentes')
     print('Severidad 2:   ',data[0]['2'],' accidentes')
@@ -217,7 +210,6 @@ def conocerZonaGeografica (cont,anio): #REQ. 6
     print("Hay ",x, " accidentes en el radio: ",radio)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-    #111.12km
 
 def main():
     cont = {}
@@ -251,7 +243,6 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                print("-"*50)
                 accidentesEnUnRangoDeFecha(cont, anio)
 
         elif inputs == 5:   #Req. 4
@@ -262,14 +253,14 @@ def main():
                 conocerEstado(cont, anio)
 
         elif inputs == 6:   #Req. 5
-            print("\nRequerimiento No 5 del reto 3: ")
+            print("\nConocer los accidentes por rango de horas\n ")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 conocerHoras(cont, anio)
 
         elif inputs == 7:   #Req. 6*
-            print("\nRequerimiento No 6 del reto 3: ")
+            print("\nConocer la zona geográfica mas accidentada *\n ")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
