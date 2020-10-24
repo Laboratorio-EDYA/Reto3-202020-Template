@@ -158,6 +158,12 @@ def conocerEstado (cont, anio):    #REQ. 4
     print("La fecha donde hubo más accidentes fue" ,str(data[0][0]).replace('datetime.date(','').replace(')',''), 'con ',data[0][1], 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+def gradosAkilometros2(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])   
 
 def conocerHoras (cont, anio):   #REQ. 5
     t1_start = process_time() #tiempo inicial
@@ -203,10 +209,10 @@ def conocerHoras (cont, anio):   #REQ. 5
 
 def conocerZonaGeografica (cont,anio): #REQ. 6
     t1_start = process_time() #tiempo inicial
-    latitud = float(input("Digita la latitud: ").replace('.',''))
-    longitud = float(input("Digita la longitud: ").replace('.',''))
+    latitud = gradosAkilometros2(input("Digita la latitud: "))
+    longitud = gradosAkilometros2(input("Digita la longitud: "))
     radio = float(input("Digita la distancia del radio en km (recuerde que un grado es 111,12km): "))
-    x = ctrl.conocerZonaGeografica(cont,latitud,longitud,radio,anio)
+    x = ctrl.conocerZonaGeografica(cont,radio,longitud,latitud,anio)
     print("Hay ",x, " accidentes en el radio: ",radio)
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
