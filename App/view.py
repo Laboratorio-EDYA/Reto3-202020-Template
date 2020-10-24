@@ -69,10 +69,17 @@ def cargarporanio(cont, anio):
         print("\nCargando información de accidentes .....")
         controller.loadData(cont[anio][0], accidentfile)
         print('Crimenes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
-        print('Altura del arbol: ' + str(controller.indexHeight(cont[anio][0])))
-        print('Elementos en el arbol: ' + str(controller.indexSize(cont[anio][0])))
-        print('Menor Llave: ' + str(controller.minKey(cont[anio][0])))
-        print('Mayor Llave: ' + str(controller.maxKey(cont[anio][0])))
+        print('Altura del arbol 1: ' + str(controller.indexHeight(cont[anio][0])[0]))
+        print('Elementos en el arbol 1: ' + str(controller.indexSize(cont[anio][0])[0]))
+
+        print('Menor Llave 1: ' + str(om.minKey(cont[anio][0]['dateIndex'])))
+        print('Mayor Llave 1: ' + str(om.maxKey(cont[anio][0]['dateIndex'])))
+
+        print('Crimenes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
+        print('Altura del arbol 2: ' + str(controller.indexHeight(cont[anio][0])[1]))
+        print('Elementos en el arbol 2: ' + str(controller.indexSize(cont[anio][0])[1]))
+        print('Menor Llave 2: ' + str(om.minKey(cont[anio][0]['timeIndex'])))
+        print('Mayor Llave 2: ' + str(om.maxKey(cont[anio][0]['timeIndex'])))
 
 def cargarAccidentes(cont, anio):
     t1_start = process_time() #tiempo inicial
