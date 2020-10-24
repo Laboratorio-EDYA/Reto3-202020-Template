@@ -97,19 +97,6 @@ def updateDateIndex(map, maptime, accident):
     addDateIndex(datentry, accident)
     return map
 
-"""def updateTimeIndex(map, accident):
-    occurreddate = accident['Start_Time']
-    accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
-    accidenttime = (accidenttime1.hour,accidenttime1.minute)
-    entry = om.get(map, accidenttime)
-    if entry is None:
-        datentry = newDataEntry(accident)
-        om.put(map, accidenttime, datentry)
-    else:
-        datentry = me.getValue(entry)
-    addDateIndex(datentry, accident)
-    return map"""
-
 def addDateIndex(datentry, accident):
     """
     Actualiza un indice de tipo de crimenes.  Este indice tiene una lista
@@ -121,7 +108,18 @@ def addDateIndex(datentry, accident):
     lt.addLast(lst, accident)
     offenseIndex = datentry['offenseIndex']
     offentry = m.get(offenseIndex, accident['Description'])
-    if (offentry is None):
+    offenseIndexTime = datentry['offenseIndexTime']
+    offentryTime = m.get(offenseIndexTime, accident['Description'])
+    if (offentry is None and offentryTime is None):
+        entry = newOffenseEntry(accident['Description'], accident)
+        lt.addLast(entry['lstoffenses'], accident)
+        m.put(offenseIndex, accident['Description'], entry)
+        m.put(offenseIndexTime, accident['Description'], entry)
+    elif offentryTime is None:
+        entry = me.getValue(offentry)
+        lt.addLast(entry['lstoffenses'], accident)
+        m.put(offenseIndexTime, accident['Description'], entry)
+    elif offentry is None:
         entry = newOffenseEntry(accident['Description'], accident)
         lt.addLast(entry['lstoffenses'], accident)
         m.put(offenseIndex, accident['Description'], entry)
@@ -135,8 +133,12 @@ def newDataEntry(accident):
     Crea una entrada en el indice por fechas, es decir en el arbol
     binario.
     """
-    entry = {'offenseIndex': None, 'lstaccident': None}
+    entry = {'offenseIndex': None,'lstaccident': None}
     entry['offenseIndex'] = m.newMap(loadfactor = 3,
+                                     numelements = 45000,
+                                     maptype = 'CHAINING',
+                                     comparefunction = compareOffenses)
+    entry['offenseIndexTime'] = m.newMap(loadfactor = 3,
                                      numelements = 45000,
                                      maptype = 'CHAINING',
                                      comparefunction = compareOffenses)
@@ -166,12 +168,12 @@ def accidentsSize(analyzer):
 def indexHeight(analyzer):
     """Numero de autores leido
     """
-    return om.height(analyzer['dateIndex'])
+    return om.height(analyzer['dateIndex']),om.height(analyzer['timeIndex'])
 
 def indexSize(analyzer):
     """Numero de autores leido
     """
-    return om.size(analyzer['dateIndex'])
+    return om.size(analyzer['dateIndex']),om.size(analyzer['timeIndex'])
 
 def minKey(analyzer):
     """Numero de autores leido
@@ -212,13 +214,12 @@ def accidentesPorHora(cont, time, anio):   #REQ. 0.5
     for i in range(2016,2020):
         if str(i) in anio['anio'] or anio['anio'] == 0:                                               
             data = om.get(cont,time)
-            values = me.getValue(data)['offenseIndex']
-            accidents = m.keySet(values)
+            values = me.getValue(data)['offenseIndexTime']
+            accidents = m.valueSet(values)
             iterator = it.newIterator(accidents)
             while it.hasNext(iterator):
-                actual = m.get(values,it.next(iterator))
-                data = me.getValue(actual)['lstoffenses']
-                cantidad['total'] += lt.size(data)
+                data = it.next(iterator)['lstoffenses']
+                cantidad['total'] += lt.size(current)
                 siguiente = it.newIterator(data)
                 while it.hasNext(siguiente):
                     current = it.next(siguiente)
