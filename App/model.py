@@ -320,15 +320,10 @@ def gradosAkilometros(x):
     return y
 def inRadio (radio,longitud,latitud, current):
     longitud = (float(gradosAkilometros2(str(longitud))))
-    print(longitud)
     latitud  = (float(gradosAkilometros2(str(latitud))))
-    print(latitud)
     start_longitud = (float(gradosAkilometros2(current['Start_Lng'])))
-    print(start_longitud)
     start_latitude = (float(gradosAkilometros2(current['Start_Lat'])))
-    print(start_latitude)
     x=ma.hypot(start_longitud-longitud,start_latitude-latitud)
-    print(x)
     return x<=float(radio)
 
 def gradosAkilometros2(x):
@@ -348,8 +343,6 @@ def dentroDelRadio(radio, longitud, latitud, current):
 def radioAgrados(radio):
     nuevo_radio=radio/111.12
     return nuevo_radio
-=======
-
 
 def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
     """
@@ -403,7 +396,7 @@ def llavesHasta(cont, date):
 def conocerHoras(cont, initialHour, finalHour, anio):
     shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
-    total = accidentsSize(cont[anio['anio'][0])
+    total = accidentsSize(cont[anio['anio']][0])
     iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
         time = it.next(iterator)
