@@ -143,4 +143,11 @@ def accidentesAnteriores (cont, date, anio):
 
 def conocerZonaGeografica(cont,latitud,longitud,radio,anio):
     return model.conocerZonaGeografica(cont,latitud,longitud,radio,anio)
+
+def gradosAkilometros2(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])    
     

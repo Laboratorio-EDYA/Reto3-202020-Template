@@ -27,6 +27,9 @@ from DISClib.ADT import map as m
 import datetime
 assert config
 from DISClib.DataStructures import listiterator as it
+import math as ma 
+import obspy.geodetics as og
+from obspy.geodetics import kilometers2degrees
 
 """
 En este archivo definimos los TADs que vamos a usar,
@@ -328,15 +331,39 @@ def conocerEstado (cont,initialDate,finalDate, anio):   #REQ. 4
                 mayorState[0] = i
                 mayorState[1] = cantidad['state'][i]
     return (mayorFecha, mayorState)
+def gradosAkilometros(x):
+    y=og.degrees2kilometers(x)
+    return y
+def inRadio (radio,longitud,latitud, current):
+    longitud = (float(gradosAkilometros2(str(longitud))))
+    print(longitud)
+    latitud  = (float(gradosAkilometros2(str(latitud))))
+    print(latitud)
+    start_longitud = (float(gradosAkilometros2(current['Start_Lng'])))
+    print(start_longitud)
+    start_latitude = (float(gradosAkilometros2(current['Start_Lat'])))
+    print(start_latitude)
+    x=ma.hypot(start_longitud-longitud,start_latitude-latitud)
+    print(x)
+    return x<=float(radio)
 
-def dentroDelRadio(cont, radio, longitud, latitud, current):
-    loc_lng = float(current['Start_Lng'].replace('.',''))
-    loc_lat = float(current['Start_Lat'].replace('.',''))
+def gradosAkilometros2(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])    
+def dentroDelRadio(radio, longitud, latitud, current):
+    loc_lng = float(current['Start_Lng'].replace('.','')) # un grado=60 millas una milla = 1852 metros
+    loc_lat = float(current['Start_Lat'].replace('.','')) 
     extremo_y  = latitud+radio
-    extremo_x    = longitud+radio
+    extremo_x  = longitud+radio 
     if extremo_y >= loc_lat and extremo_x >= loc_lng:
         return True
     return False
+def radioAgrados(radio):
+    nuevo_radio=radio/111.12
+    return nuevo_radio
 
 def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
     """
@@ -349,9 +376,7 @@ def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
     """
     cantidad = 0
     for i in range(2016,2020):
-        if cont[str(i)][0] != None:
-            initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
-            finalDate = om.maxKey(cont[str(i)][0]['dateIndex']) 
+        if cont[str(i)][0] != None: 
             shaves = om.keySet(cont[str(i)][0]['dateIndex'])
             iterator = it.newIterator(shaves)
             while it.hasNext(iterator):
@@ -366,7 +391,7 @@ def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
                     siguiente = it.newIterator(data)
                     while it.hasNext(siguiente):
                         current = it.next(siguiente)
-                        if dentroDelRadio(cont, radio, longitud, latitud, current) == True:
+                        if inRadio(radio, longitud, latitud, current) == True:
                             cantidad += 1
                 
     return cantidad
