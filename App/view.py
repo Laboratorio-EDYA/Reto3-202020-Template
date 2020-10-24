@@ -201,7 +201,7 @@ def conocerHoras (cont, anio):   #REQ. 5
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-def conocerZonaGeografica (cont,anio):
+def conocerZonaGeografica (cont,anio): #REQ. 6
     t1_start = process_time() #tiempo inicial
     latitud = float(input("Digita la latitud: ").replace('.',''))
     longitud = float(input("Digita la longitud: ").replace('.',''))

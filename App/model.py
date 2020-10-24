@@ -87,7 +87,6 @@ def updateDateIndex(map, accident):
     addDateIndex(datentry, accident)
     return map
 
-
 def updateTimeIndex(map, accident):
     occurreddate = accident['Start_Time']
     accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
@@ -193,6 +192,10 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
         if numoffenses is not None:
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
+
+# ==============================
+# Funciones de requerimientos
+# ==============================
 
 def accidentesPorHora(cont, time, anio):   #REQ. 0.5
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
