@@ -63,11 +63,11 @@ def newAnalyzer():
 
 def addAccident(analyzer, accident):
     lt.addLast(analyzer['accidents'], accident)
-    updateDateIndex(analyzer['dateIndex'], accident)
-    updateTimeIndex(analyzer['timeIndex'], accident)
+    updateDateIndex(analyzer['dateIndex'], analyzer['timeIndex'],accident)
+    #updateTimeIndex(analyzer['timeIndex'], accident)
     return analyzer
 
-def updateDateIndex(map, accident):
+def updateDateIndex(map, maptime, accident):
     """
     Se toma la fecha del crimen y se busca si ya existe en el arbol
     dicha fecha.  Si es asi, se adiciona a su lista de crimenes
@@ -78,16 +78,26 @@ def updateDateIndex(map, accident):
     """
     occurreddate = accident['Start_Time']
     accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
-    entry = om.get(map, accidentdate.date())
-    if entry is None:
+    accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
+    accidenttime = (accidenttime1.hour,accidenttime1.minute)
+    entrydate = om.get(map, accidentdate.date())
+    entrytime = om.get(maptime, accidenttime)
+    if entrydate is None and entrytime is None:
+        datentry = newDataEntry(accident)
+        om.put(map, accidentdate.date(), datentry)
+        om.put(maptime, accidenttime, datentry)
+    elif entrytime is None:
+        datentry = me.getValue(entrydate)
+        om.put(maptime, accidenttime, datentry)
+    elif entrydate is None:
         datentry = newDataEntry(accident)
         om.put(map, accidentdate.date(), datentry)
     else:
-        datentry = me.getValue(entry)
+        datentry = me.getValue(entrydate)
     addDateIndex(datentry, accident)
     return map
 
-def updateTimeIndex(map, accident):
+"""def updateTimeIndex(map, accident):
     occurreddate = accident['Start_Time']
     accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
     accidenttime = (accidenttime1.hour,accidenttime1.minute)
@@ -98,7 +108,7 @@ def updateTimeIndex(map, accident):
     else:
         datentry = me.getValue(entry)
     addDateIndex(datentry, accident)
-    return map
+    return map"""
 
 def addDateIndex(datentry, accident):
     """
