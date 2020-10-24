@@ -213,11 +213,13 @@ def accidentesPorHora(cont, time, anio):   #REQ. 0.5
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
     for i in range(2016,2020):
         if str(i) in anio['anio'] or anio['anio'] == 0:                                               
+            data = om.get(cont[str(i)][0]['timeIndex'],time)
             values = me.getValue(data)['offenseIndexTime']
             accidents = m.valueSet(values)
             iterator = it.newIterator(accidents)
             while it.hasNext(iterator):
                 data = it.next(iterator)['lstoffenses']
+                cantidad['total'] += lt.size(data)
                 siguiente = it.newIterator(data)
                 while it.hasNext(siguiente):
                     current = it.next(siguiente)
@@ -361,11 +363,11 @@ def llavesHasta(cont, date):
 def conocerHoras(cont, initialHour, finalHour, anio):
     shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
-    total = accidentsSize(cont[anio['anio']][0])
     total = accidentsSize(cont[anio['anio'][0])
     iterator = it.newIterator(shaves)
     while it.hasNext(iterator):
         time = it.next(iterator)
+        cantidades = accidentesPorHora(cont,time, anio)
         cantidad['total'] += cantidades['total']
         cantidad['1'] += cantidades['1']
         cantidad['2'] += cantidades['2']

@@ -69,6 +69,8 @@ def cargarporanio(cont, anio):
         print("\nCargando información de accidentes .....")
         controller.loadData(cont[anio][0], accidentfile)
         print('Accidentes cargados: ' + str(controller.accidentsSize(cont[anio][0])))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont[anio][0])[0]))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont[anio][0])[0]))
         print('Menor Llave: ' + str(controller.minKey(cont[anio][0])))
         print('Mayor Llave: ' + str(controller.maxKey(cont[anio][0])))
 
@@ -138,6 +140,7 @@ def accidentesAnteriores (cont, anio):   #REQ. 2
     day = input('Digita el día DD: ')
     date = year.strip() + '-' + month.strip() + '-' + day.strip()
     data = ctrl.accidentesAnteriores(cont, date, anio)
+    print('\n',data[0], " accidentes fueron reportados antes de la fecha " +date)
     print("En " ,str(data[1][0]).replace('datetime.date(','').replace(')',''), " fue el día con mayor accidentalidad, con ", str(data[1][1]), 'accidentes')
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
