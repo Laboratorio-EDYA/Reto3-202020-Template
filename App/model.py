@@ -39,7 +39,6 @@ es decir contiene los modelos con los datos en memoria
 # API del TAD Catalogo de Libros
 # -----------------------------------------------------
 
-
 def newAnalyzer():
     """ Inicializa el analizador
 
@@ -60,16 +59,13 @@ def newAnalyzer():
                                       comparefunction = compareTime)
     return analyzer
 
-
 # Funciones para agregar informacion al catalogo
-
 
 def addAccident(analyzer, accident):
     lt.addLast(analyzer['accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
     updateTimeIndex(analyzer['timeIndex'], accident)
     return analyzer
-
 
 def updateDateIndex(map, accident):
     """
@@ -91,7 +87,6 @@ def updateDateIndex(map, accident):
     addDateIndex(datentry, accident)
     return map
 
-
 def updateTimeIndex(map, accident):
     occurreddate = accident['Start_Time']
     accidenttime1 = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') # print("Created at %s:%s" % (t1.hour, t1.minute))
@@ -104,7 +99,6 @@ def updateTimeIndex(map, accident):
         datentry = me.getValue(entry)
     addDateIndex(datentry, accident)
     return map
-
 
 def addDateIndex(datentry, accident):
     """
@@ -126,7 +120,6 @@ def addDateIndex(datentry, accident):
         lt.addLast(entry['lstoffenses'], accident)
     return datentry
 
-
 def newDataEntry(accident):
     """
     Crea una entrada en el indice por fechas, es decir en el arbol
@@ -140,7 +133,6 @@ def newDataEntry(accident):
     entry['lstaccident'] = lt.newList('SINGLE_LINKED', compareDates)
     return entry
 
-
 def newOffenseEntry(offensegrp, accident):
     """
     Crea una entrada en el indice por tipo de crimen, es decir en
@@ -151,11 +143,9 @@ def newOffenseEntry(offensegrp, accident):
     ofentry['lstoffenses'] = lt.newList('SINGLELINKED', compareOffenses)
     return ofentry
 
-
 # ==============================
 # Funciones de consulta
 # ==============================
-
 
 def accidentsSize(analyzer):
     """
@@ -163,30 +153,25 @@ def accidentsSize(analyzer):
     """
     return lt.size(analyzer['accidents'])
 
-
 def indexHeight(analyzer):
     """Numero de autores leido
     """
     return om.height(analyzer['dateIndex'])
-
 
 def indexSize(analyzer):
     """Numero de autores leido
     """
     return om.size(analyzer['dateIndex'])
 
-
 def minKey(analyzer):
     """Numero de autores leido
     """
     return om.minKey(analyzer['dateIndex'])
 
-
 def maxKey(analyzer):
     """Numero de autores leido
     """
     return om.maxKey(analyzer['dateIndex'])
-
 
 def getAccidentsByRange(analyzer, initialDate, finalDate):
     """
@@ -194,7 +179,6 @@ def getAccidentsByRange(analyzer, initialDate, finalDate):
     """
     lst = om.values(analyzer['dateIndex'], initialDate, finalDate)
     return lst
-
 
 def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
     """
@@ -208,6 +192,10 @@ def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
         if numoffenses is not None:
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
+
+# ==============================
+# Funciones de requerimientos
+# ==============================
 
 def accidentesPorHora(cont, time, anio):   #REQ. 0.5
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
@@ -235,115 +223,72 @@ def accidentesPorFecha(cont, date, anio):   #REQ. 1
         if cont[str(i)][0] != None:
             data = om.get(cont[str(i)][0]['dateIndex'],date)
             values = me.getValue(data)['offenseIndex']
-            accidents = m.keySet(values)
+            accidents = m.valueSet(values)
             iterator = it.newIterator(accidents)
             while it.hasNext(iterator):
-                actual = m.get(values,it.next(iterator))
-                data = me.getValue(actual)['lstoffenses']
-                cantidad['total'] += lt.size(data)
-                siguiente = it.newIterator(data)
+                actual = it.next(iterator)['lstoffenses']
+                cantidad['total'] += lt.size(actual)
+                siguiente = it.newIterator(actual)
                 while it.hasNext(siguiente):
                     current = it.next(siguiente)
                     severidad = current['Severity']
                     cantidad[severidad] += 1
     return cantidad
 
-def llavesHasta(cont, date, anio):
-    llaves = {}
-    for i in range(2016,2020):
-        if cont[str(i)][0] != None:
-            if str(i) not in str(date):
-                initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
-                finalDate = om.maxKey(cont[str(i)][0]['dateIndex'])
-                llaves[str(i)] = om.keys(cont['dateIndex'],initialDate,finalDate)
-            else:
-                initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
-                finalDate = om.floor(cont[str(i)][0]['dateIndex'],date)
-                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'],initialDate,finalDate)
-                break
-    return llaves
-
-def llavesEnRango(cont, initialDate, finalDate, anio):
-    llaves = {}
-    if anio['type'] == 0:
-            llaves[anio['anio']] = om.keys(cont[anio['anio']][0]['dateIndex'], initialDate, finalDate)
-    else: 
-        for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
-            if str(i) in str(initialDate):
-                mayor = om.maxKey(cont[str(i)][0]['dateIndex'])
-                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], initialDate, mayor)
-            elif str(i) in str(finalDate):
-                menor = om.minKey(cont[str(i)][0]['dateIndex'])
-                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], menor, finalDate)
-            else:
-                llaves[str(i)] = om.keySet(cont[str(i)][0]['dateIndex'])
-    return llaves
-
 def accidentesAnteriores (cont, date, anio):   # REQ. 1
-    cantidad = {'total': 0, 'fecha': {} }
-    llaves = llavesHasta(cont, date, anio)
+    cantidad = {'total': 0, 'fecha': {}}
+    llaves = llavesHasta(cont, date)
     for i in range(2016,2020):
         if cont[str(i)][0] != None:
             iterator = it.newIterator(llaves[str(i)])
             while it.hasNext(iterator):
+                numero = 0
                 date = it.next(iterator)
                 data = om.get(cont[str(i)][0]['dateIndex'],date)
                 values = me.getValue(data)['offenseIndex']
-                accidents = m.keySet(values)
-                numero = 0
+                accidents = m.valueSet(values)
                 iterator2 = it.newIterator(accidents)
                 while it.hasNext(iterator2):
-                    actual = m.get(values,it.next(iterator2))
-                    data = me.getValue(actual)['lstoffenses']
-                    cantidad['total'] += lt.size(data)
-                    numero += lt.size(data)
+                    actual = it.next(iterator2)['lstoffenses']
+                    cantidad['total'] += lt.size(actual)
+                    numero += lt.size(actual)
                 cantidad['fecha'][date] = numero
-    mayor = ['',0]
-    for i in cantidad['fecha']:
-        if cantidad['fecha'][i] >= mayor[1]:
-            mayor[0] = i
-            mayor[1] = cantidad['fecha'][i]
+    mayor = hallarMayorFecha(cantidad)
     return (cantidad['total'],mayor)
 
 def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate, anio): #O(N)   REQ. 3
     llaves = llavesEnRango(cont, initialDate, finalDate, anio)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
+    total = 0
     for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
         iterator = it.newIterator(llaves[str(i)])
         while it.hasNext(iterator):
             date = it.next(iterator)
             cantidades = accidentesPorFecha(cont, date, anio)
-            cantidad['total'] += cantidades['total']
+            total += cantidades['total']
             cantidad['1'] += cantidades['1']
             cantidad['2'] += cantidades['2']
             cantidad['3'] += cantidades['3']
             cantidad['4'] += cantidades['4']
-        mayor = ['',0]
-        total = cantidad['total']
-        del cantidad['total']
-        for i in cantidad:
-            if cantidad[i] >= mayor[1]:
-                mayor[0] = i
-                mayor[1] = cantidad[i]
+    mayor = hallarMayorSeveridad(cantidad)
     return (total,mayor)
 
-def conocerEstado (cont,initialDate,finalDate, anio):   #REQ. 4
-    shaves = llavesEnRango(cont, initialDate, finalDate, anio)
+def conocerEstado (cont, initialDate, finalDate, anio):   #REQ. 4
+    llaves = llavesEnRango(cont, initialDate, finalDate, anio)
     cantidad = {'fecha': {}, 'state': {} }
     for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
-        iterator = it.newIterator(shaves[str(i)])
+        iterator = it.newIterator(llaves[str(i)])
         while it.hasNext(iterator):
+            numero = 0
             date = it.next(iterator)
             data = om.get(cont[str(i)][0]['dateIndex'],date)
             values = me.getValue(data)['offenseIndex']
-            accidents = m.keySet(values)
-            numero = 0
+            accidents = m.valueSet(values)
             iterator2 = it.newIterator(accidents)
             while it.hasNext(iterator2):
-                actual = m.get(values,it.next(iterator2))
-                data = me.getValue(actual)['lstoffenses']
-                numero += lt.size(data)
-                siguiente = it.newIterator(data)
+                actual = it.next(iterator2)['lstoffenses']
+                numero += lt.size(actual)
+                siguiente = it.newIterator(actual)
                 while it.hasNext(siguiente):
                     current = it.next(siguiente)
                     state = current['State']
@@ -352,26 +297,9 @@ def conocerEstado (cont,initialDate,finalDate, anio):   #REQ. 4
                     else: 
                         cantidad['state'][state] += 1
             cantidad['fecha'][date] = numero
-        mayorFecha = ['',0]
-        for i in cantidad['fecha']:
-            if cantidad['fecha'][i] >= mayorFecha[1]:
-                mayorFecha[0] = i
-                mayorFecha[1] = cantidad['fecha'][i]
-        mayorState = ['',0]
-        for i in cantidad['state']:
-            if cantidad['state'][i] >= mayorState[1]:
-                mayorState[0] = i
-                mayorState[1] = cantidad['state'][i]
+        mayorFecha = hallarMayorFecha(cantidad)
+        mayorState = hallarMayorState(cantidad)
     return (mayorFecha, mayorState)
-
-def dentroDelRadio(cont, radio, longitud, latitud, current):
-    loc_lng = float(current['Start_Lng'].replace('.',''))
-    loc_lat = float(current['Start_Lat'].replace('.',''))
-    extremo_y  = latitud+radio
-    extremo_x    = longitud+radio
-    if extremo_y >= loc_lat and extremo_x >= loc_lng:
-        return True
-    return False
 
 def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
     """
@@ -385,8 +313,6 @@ def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
     cantidad = 0
     for i in range(2016,2020):
         if cont[str(i)][0] != None:
-            initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
-            finalDate = om.maxKey(cont[str(i)][0]['dateIndex']) 
             shaves = om.keySet(cont[str(i)][0]['dateIndex'])
             iterator = it.newIterator(shaves)
             while it.hasNext(iterator):
@@ -406,6 +332,23 @@ def conocerZonaGeografica(cont, radio, longitud, latitud,anio):
                 
     return cantidad
 
+# ==============================
+# Funciones de apoyo a requerimientos
+# ==============================
+
+def llavesHasta(cont, date):
+    llaves = {}
+    for i in range(2016,2020):
+        if cont[str(i)][0] != None:
+            if str(i) not in str(date):
+                llaves[str(i)] = om.keySet(cont['dateIndex'])
+            else:
+                initialDate = om.minKey(cont[str(i)][0]['dateIndex'])
+                finalDate = om.floor(cont[str(i)][0]['dateIndex'],date)
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'],initialDate,finalDate)
+                break
+    return llaves
+
 def conocerHoras(cont, initialHour, finalHour, anio):
     shaves = om.keys(cont[anio['anio']][0]['timeIndex'],initialHour,finalHour)
     cantidad = {'total': 0,'1':0,'2':0,'3':0,'4':0}
@@ -422,10 +365,57 @@ def conocerHoras(cont, initialHour, finalHour, anio):
     porcentaje = round(((cantidad['total'] * 100) / total),2)
     return (cantidad,porcentaje)
 
+def llavesEnRango(cont, initialDate, finalDate, anio):
+    llaves = {}
+    if anio['type'] == 0:
+            llaves[anio['anio']] = om.keys(cont[anio['anio']][0]['dateIndex'], initialDate, finalDate)
+    else: 
+        for i in range(int(str(initialDate)[:4]),int(str(finalDate)[:4])+1):
+            if str(i) in str(initialDate):
+                mayor = om.maxKey(cont[str(i)][0]['dateIndex'])
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], initialDate, mayor)
+            elif str(i) in str(finalDate):
+                menor = om.minKey(cont[str(i)][0]['dateIndex'])
+                llaves[str(i)] = om.keys(cont[str(i)][0]['dateIndex'], menor, finalDate)
+            else:
+                llaves[str(i)] = om.keySet(cont[str(i)][0]['dateIndex'])
+    return llaves
+
+def dentroDelRadio(cont, radio, longitud, latitud, current):
+    loc_lng = float(current['Start_Lng'].replace('.',''))
+    loc_lat = float(current['Start_Lat'].replace('.',''))
+    extremo_y  = latitud+radio
+    extremo_x    = longitud+radio
+    if extremo_y >= loc_lat and extremo_x >= loc_lng:
+        return True
+    return False
+
+def hallarMayorFecha(cantidad):
+    mayor = ['',0]
+    for i in cantidad['fecha']:
+        if cantidad['fecha'][i] >= mayor[1]:
+            mayor[0] = i
+            mayor[1] = cantidad['fecha'][i]
+    return mayor
+
+def hallarMayorSeveridad(cantidad):
+    mayor = ['',0]
+    for i in cantidad:
+        if cantidad[i] >= mayor[1]:
+            mayor[0] = i
+            mayor[1] = cantidad[i]
+    return mayor
+
+def hallarMayorState(cantidad):
+    mayorState = ['',0]
+    for i in cantidad['state']:
+        if cantidad['state'][i] >= mayorState[1]:
+            mayorState[0] = i
+            mayorState[1] = cantidad['state'][i]
+    return mayorState
 # ==============================
 # Funciones de Comparacion
 # ==============================
-
 
 def compareIds(id1, id2):
     """
@@ -437,7 +427,6 @@ def compareIds(id1, id2):
         return 1
     else:
         return -1
-
 
 def compareDates(date1, date2):
     """
