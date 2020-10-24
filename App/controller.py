@@ -37,7 +37,6 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 
-
 def init():
     """
     Llama la funcion de inicializacion  del modelo.
@@ -45,7 +44,6 @@ def init():
     # catalog es utilizado para interactuar con el modelo
     analyzer = model.newAnalyzer()
     return analyzer
-
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
@@ -67,13 +65,11 @@ def loadData(analyzer, accidentsfile):
 #  Funciones para consultas
 # ___________________________________________________
 
-
 def accidentsSize(analyzer):
     """
     Numero de crimenes leidos
     """
     return model.accidentsSize(analyzer)
-
 
 def indexHeight(analyzer):
     """
@@ -81,13 +77,11 @@ def indexHeight(analyzer):
     """
     return model.indexHeight(analyzer)
 
-
 def indexSize(analyzer):
     """
     Numero de nodos en el arbol
     """
     return model.indexSize(analyzer)
-
 
 def minKey(analyzer):
     """
@@ -95,13 +89,11 @@ def minKey(analyzer):
     """
     return model.minKey(analyzer)
 
-
 def maxKey(analyzer):
     """
     La mayor llave del arbol
     """
     return model.maxKey(analyzer)
-
 
 def getAccidentsByRange(analyzer, initialDate, finalDate):
     """
@@ -111,7 +103,6 @@ def getAccidentsByRange(analyzer, initialDate, finalDate):
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
     return model.getAccidentsByRange(analyzer, initialDate.date(),
                                   finalDate.date())
-
 
 def getAccidentsByRangeCode(analyzer, initialDate, offensecode):
     """
@@ -131,7 +122,6 @@ def accidentesEnUnRangoDeFecha(cont, initialDate, finalDate, anio):
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
     return model.accidentesEnUnRangoDeFecha(cont,initialDate.date(),finalDate.date(), anio)
 
-
 def conocerEstado (cont, initialDate, finalDate, anio):
     initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
     finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
@@ -140,6 +130,13 @@ def conocerEstado (cont, initialDate, finalDate, anio):
 def accidentesAnteriores (cont, date, anio):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     return model.accidentesAnteriores(cont, date.date(), anio)
+
+def conocerHoras(cont, initialHour, finalHour, anio):
+    initialHour1 = datetime.datetime.strptime(initialHour, '%H:%M')
+    finalHour1 = datetime.datetime.strptime(finalHour, '%H:%M')
+    initialHour = (initialHour1.hour,initialHour1.minute)
+    finalHour = (finalHour1.hour,finalHour1.minute)
+    return model.conocerHoras(cont,initialHour,finalHour,anio)
 
 def conocerZonaGeografica(cont,latitud,longitud,radio,anio):
     return model.conocerZonaGeografica(cont,latitud,longitud,radio,anio)
